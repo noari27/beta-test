@@ -2,755 +2,301 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f1115">
-<title>ジャグラーα判定システム</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ジャグラー設定看破ゲーム α</title>
 <style>
-:root{--bg:#0d1016;--card:#171b23;--card2:#10151d;--line:#2a313c;--text:#f4f7fb;--muted:#9aa4b2;--accent:#4f8cff;--good:#42c88a;--warn:#f2b84b;--bad:#ff6b6b}
-*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#090c11 0%,#111722 42%,#0d1016 100%);min-height:100vh}
-.wrap{max-width:760px;margin:0 auto;padding:18px 14px 48px}h1{font-size:25px;margin:4px 0}.sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
-.card{background:rgba(23,27,35,.96);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 12px 28px rgba(0,0,0,.2)}
-.card-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.card-title h2{font-size:17px;margin:0}
-label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}input,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#0f141b;color:var(--text);font-size:16px;outline:none}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:1.15fr .85fr .85fr;gap:9px}
-@media(max-width:480px){.grid3{grid-template-columns:1fr 1fr}.grid3>div:first-child{grid-column:1/-1}}
-button{border:0;border-radius:13px;padding:13px 15px;font-weight:800;font-size:15px;cursor:pointer}.primary{background:var(--accent);color:#fff}.secondary{background:#252c36;color:var(--text);border:1px solid var(--line)}
-.tiny{padding:6px 8px;border-radius:9px;font-size:11px;color:#7d8794;background:#11151b;border:1px solid #242a32}.big-action{width:100%;margin-top:12px;padding:14px 16px;font-size:17px}
-.rankbox{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
-.rank{min-height:82px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:950;background:#202735}.rank.S{color:#ffcf5a;text-shadow:0 0 16px rgba(255,207,90,.35)}.rank.Aplus{color:#8fe7cf}.rank.A{color:#75e0ab}.rank.B{color:#88b6ff}.rank.Cplus{color:#ffd166}.rank.Cminus{color:#ffad66}.rank.D{color:#ff8383}
-.p4{font-size:30px;font-weight:900}.muted,.note{color:var(--muted)}.note{font-size:12px;line-height:1.6}.hidden{display:none!important}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.stat{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px}.stat .k{font-size:11px;color:var(--muted)}.stat .v{font-size:18px;font-weight:850;margin-top:5px}
-.history{display:flex;flex-direction:column;gap:8px}.hrow{display:grid;grid-template-columns:56px 80px 1fr;gap:8px;align-items:center;padding:10px 11px;background:#11161d;border:1px solid var(--line);border-radius:12px;font-size:13px}.metrics{text-align:right}
-.logbox{min-height:260px;background:#0c1117;border:1px solid var(--line);border-radius:13px;padding:12px;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.65;white-space:pre-wrap}
-.balanceBox{background:#0f151d;border:1px solid #304258;border-radius:15px;padding:13px}.balanceStats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.balanceStat{background:#0c1117;border:1px solid #263443;border-radius:12px;padding:10px}.bk{font-size:11px;color:var(--muted)}.bv{font-size:18px;font-weight:850;margin-top:4px}
-.balanceBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.carryBox{margin-top:12px;padding:12px;border:1px solid #3a4655;border-radius:13px;background:#101720}
-.carryModes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.carryModes button{padding:10px 7px;font-size:13px}.carryInfo{font-size:12px;color:#b8c5d6;line-height:1.5;margin-top:8px}
-.good{color:var(--good)}.bad{color:var(--bad)}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#eaf2ff;color:#10151d;padding:10px 16px;border-radius:999px;font-weight:800;opacity:0;transition:.2s}.toast.show{opacity:1}
-.savedItem{background:#11161d;border:1px solid var(--line);border-radius:13px;padding:11px;margin-top:8px}.savedTop{display:flex;justify-content:space-between;gap:10px}
-.rulegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.rule{background:#11161d;border:1px solid var(--line);padding:10px;border-radius:12px}
-.modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
-.modal{width:min(560px,100%);max-height:85vh;overflow:auto;background:#171b23;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
-.modalTop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.modalTop h2{margin:0;font-size:18px}
-.editArea{width:100%;min-height:320px;background:#0c1117;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.6;resize:vertical}
-.ruleOpen{width:100%;margin-top:8px}
-.collapsedBody{display:none!important}.collapseBtn{white-space:nowrap}
-.graphBox{margin-top:10px;background:#0c1117;border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
-.graphCanvas{min-width:420px}
-.eventInputRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
-.eventButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.eventBtn{background:#171d26;color:#aeb8c5;border:1px solid #303846;padding:12px 5px;border-radius:12px;font-weight:900}
-.eventBtn.active{background:#eaf2ff;color:#0d1218;border-color:#eaf2ff;box-shadow:0 0 0 2px rgba(234,242,255,.08)}
-@media(max-width:480px){.eventInputRow{grid-template-columns:1fr}.eventButtons{grid-template-columns:repeat(3,1fr)}}
-.graphBox svg{width:100%;min-height:300px;height:auto;display:block}.graphLegend{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin-top:4px}
-.savedActions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.savedExcerpt{font-size:12px;color:var(--muted);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.calendarGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px}.calDow{text-align:center;font-size:11px;color:var(--muted);padding:4px 0}.calDay{min-height:58px;background:#10151c;border:1px solid #252d37;border-radius:9px;padding:5px;font-size:11px}.calDay.empty{opacity:.2}.calNum{color:var(--muted)}.calProfit{font-weight:850;margin-top:7px;font-size:11px;line-height:1.2}.calendarSummary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.calSum{background:#0c1117;border:1px solid var(--line);border-radius:12px;padding:10px}.calSum .v{font-size:20px;font-weight:900;margin-top:4px}
-.modalGraph{min-height:220px}
-
-/* 旧UI寄せ + 視認性改善 */
-.decisionSummary{margin-top:10px;background:#10151d;border:1px solid #2d3744;border-radius:14px;padding:13px;font-size:14px;line-height:1.65}
-.promotionBox{margin-top:10px;background:#0f1a25;border:1px solid #31577c;border-radius:14px;padding:13px}
-.promotionTitle{font-size:13px;font-weight:900;color:#a9ceff;margin-bottom:8px}
-.promoGood{color:#42d69a;font-weight:800}.promoMuted{color:#9aa4b2}
-.eventBadge{display:inline-flex;align-items:center;justify-content:center;min-width:76px;padding:8px 10px;border-radius:11px;font-weight:950;font-size:16px;line-height:1}
-.eventBadge.bb{background:#ff4e43;color:#fff;box-shadow:0 3px 12px rgba(255,78,67,.18)}
-.eventBadge.reg{background:#3c7df0;color:#fff;box-shadow:0 3px 12px rgba(60,125,240,.18)}
-.eventBadge.hama{background:#3a414c;color:#f1f4f8}
-.hrow{grid-template-columns:48px 112px 1fr}
-.hProfit{font-weight:850;margin-top:3px}
-.savedItem{padding:13px}
-.savedMain{min-width:0;flex:1}
-.savedTitle{font-size:16px;font-weight:900;line-height:1.35}
-.savedRank{font-size:14px;margin-top:5px}
-.savedMoney{font-size:13px;color:#9aa4b2;margin-top:6px;line-height:1.5}
-.savedActions{display:grid;grid-template-columns:repeat(5,auto);gap:5px;margin-top:10px;justify-content:start}
-.savedActions .tiny{font-size:10px;padding:7px 8px}
-@media(max-width:480px){.savedActions{grid-template-columns:repeat(5,1fr)}.savedActions .tiny{padding:7px 4px}.hrow{grid-template-columns:42px 98px 1fr}.eventBadge{min-width:68px;font-size:15px;padding:8px 7px}}
-.graphCanvas{min-width:420px}
-
-
-.calDay.hasData{cursor:pointer;border-color:#3a516c;background:#111a24}
-.calDay.hasData:active{transform:scale(.98)}
-.dayDetailList{display:flex;flex-direction:column;gap:9px;margin-top:10px}
-.dayDetailItem{background:#0c1117;border:1px solid var(--line);border-radius:12px;padding:11px}
-.dayDetailTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.dayDetailMachine{font-weight:900}.dayDetailRank{font-size:12px;color:var(--muted);margin-top:4px}
-.dayDetailProfit{font-weight:900;font-size:16px;white-space:nowrap}
-
-
-.timeGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-@media(max-width:480px){.timeGrid{grid-template-columns:1fr 1fr}}
-
-/* βモデル + 小役カウンター追加 */
-.modelSwitch{margin:0 0 12px;background:#101720;border:1px solid #33445a;border-radius:14px;padding:12px}.checkRow{display:flex;align-items:center;gap:10px}.checkRow input{width:22px;height:22px;accent-color:#4f8cff;flex:0 0 auto}.checkRow label{margin:0;color:var(--text);font-size:14px;font-weight:850}
-.counterPanel{margin-bottom:12px;background:#0d141d;border:1px solid #2d3a4b;border-radius:14px;padding:12px}.counterTitle{font-size:13px;font-weight:900;margin-bottom:9px}.counterGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.counterItem{background:#111922;border:1px solid #2b3745;border-radius:13px;padding:9px;text-align:center}.counterName{font-size:12px;color:var(--muted);font-weight:850}.counterValue{font-size:26px;font-weight:950;margin:5px 0}.counterBtns{display:grid;grid-template-columns:40px 1fr;gap:5px}.counterMinus{padding:10px 4px;background:#202833;color:#aeb8c5;border:1px solid #333e4d}.counterPlus{padding:10px 4px;background:#294e3e;color:#eafff5;border:1px solid #386f58;font-size:18px}.counterMeta{margin-top:9px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.miniStat{background:#101720;border:1px solid #2a3849;border-radius:11px;padding:9px}.miniStat .k{font-size:10px;color:var(--muted)}.miniStat .v{font-size:16px;font-weight:900;margin-top:3px}
-.betaBox{margin-top:10px;border:1px solid #554c73;background:#171526;border-radius:14px;padding:12px}.betaTitle{font-size:11px;color:#bdb2e8}.betaP4{font-size:25px;font-weight:950;color:#d5ccff}.betaHint{font-size:11px;color:#aaa1c9;margin-top:4px;line-height:1.45}
-.betaConfidence{display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:900;border:1px solid #3b4554}.betaConfidence.low{color:#aab4c0;background:#171c23}.betaConfidence.mid{color:#ffd78a;background:#2b2518;border-color:#5c4b28}.betaConfidence.high{color:#bff7dd;background:#173227;border-color:#2d6a50}.modeBadge{display:inline-block;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:900;margin-left:6px}.modeBadge.estimate{background:#26303d;color:#b9c5d4}.modeBadge.actual{background:#214c3a;color:#bff7dd}
-@media(max-width:480px){.counterGrid{grid-template-columns:repeat(3,1fr)}.counterItem{padding:7px 5px}.counterName{font-size:10px}.counterValue{font-size:23px}.counterBtns{grid-template-columns:34px 1fr}}
-
+:root{--bg:#0d1016;--card:#171c25;--card2:#11161e;--line:#2a3342;--text:#f5f7fb;--muted:#94a0b2;--blue:#4f8cff;--red:#ff4b3e;--green:#54e38e;--yellow:#fff36a;--orange:#f59a36;--cyan:#50b8d8}
+*{box-sizing:border-box}html,body{margin:0;background:linear-gradient(180deg,#0b0f15,#111722 38%,#0d1016);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic",sans-serif}body{min-height:100vh}.wrap{max-width:900px;margin:auto;padding:18px 14px 42px}h1{font-size:24px;margin:4px 0 5px}.sub{color:var(--muted);font-size:13px;margin-bottom:16px}.card{background:rgba(23,28,37,.96);border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 0 14px;box-shadow:0 10px 28px rgba(0,0,0,.22)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media(min-width:720px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}label{display:block;color:var(--muted);font-size:12px;margin:0 0 6px}select,input{width:100%;background:#11161e;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px}button{border:0;border-radius:14px;padding:13px 15px;font-weight:800;font-size:15px;cursor:pointer}.primary{background:var(--blue);color:#fff}.secondary{background:#252d39;color:#fff;border:1px solid var(--line)}.danger{background:#9b3b44;color:#fff}.success{background:#287a50;color:#fff}.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.row button{flex:1;min-width:130px}.modebar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#11161e;border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-top:14px}.modebar b{font-size:14px}.modebar small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.switch{position:relative;width:56px;height:32px;flex:0 0 auto}.switch input{display:none}.slider{position:absolute;inset:0;border-radius:999px;background:#323a47;border:1px solid #424c5b}.slider:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}.switch input:checked+.slider{background:var(--blue)}.switch input:checked+.slider:before{transform:translateX(24px)}.hero{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(min-width:700px){.hero{grid-template-columns:repeat(4,1fr)}}.stat{background:#11161e;border:1px solid var(--line);border-radius:14px;padding:12px}.k{font-size:11px;color:var(--muted)}.v{font-weight:900;font-size:22px;margin-top:4px}.rateLine{font-size:11px;color:var(--muted);margin-top:3px}.graph{width:100%;height:310px;background:#07090d;border:1px solid #333c48;border-radius:14px;overflow:hidden;position:relative}svg{width:100%;height:100%;display:block}.axis{stroke:#758092;stroke-width:1;stroke-dasharray:5 6}.zero{stroke:#cfd5df;stroke-width:1.4;stroke-dasharray:5 5}.plot{fill:none;stroke:var(--orange);stroke-width:4;stroke-linejoin:round;stroke-linecap:round}.glabel{fill:#9ca8b8;font-size:11px}.alpha{display:none}.alpha.show{display:block}.alpha-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.rank{font-size:32px;font-weight:950}.p4{font-size:24px;font-weight:900}.bar{height:11px;border-radius:99px;background:#252d38;overflow:hidden;margin:10px 0}.bar>div{height:100%;background:linear-gradient(90deg,#4f8cff,#54e38e);width:0}.probs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}@media(min-width:700px){.probs{grid-template-columns:repeat(6,1fr)}}.prob{background:#11161e;border:1px solid var(--line);border-radius:9px;height:54px;padding:0;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}.prob b{display:block;font-size:13px;line-height:1.05;margin-top:2px}.prob small{color:var(--muted);font-size:9px;line-height:1.05}.guess{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.guess button{width:100%;min-width:0;background:#222a35;color:white;border:1px solid var(--line);padding:13px 6px}.guess button.sel{background:var(--blue);border-color:#76a2ff}.reveal{display:none;margin-top:12px;padding:14px;border-radius:14px;background:#11161e;border:1px solid var(--line)}.reveal.show{display:block}.correct{color:var(--red)}.wrong{color:var(--blue)}.reveal.correctBox{border-color:#8e302a;background:#241313;box-shadow:0 0 0 1px rgba(255,75,62,.12),0 10px 24px rgba(255,75,62,.08)}.reveal.wrongBox{border-color:#315b9b;background:#101a2a;box-shadow:0 0 0 1px rgba(79,140,255,.12),0 10px 24px rgba(79,140,255,.08)}.empty{color:var(--muted);text-align:center;padding:18px}.note{color:var(--muted);font-size:12px;line-height:1.65}.section-title{font-weight:900;font-size:18px;margin-bottom:10px}.progressTrack{height:10px;border-radius:999px;background:#252d38;overflow:hidden}.progressFill{height:100%;background:var(--blue)}.timeline{display:flex;gap:8px;overflow-x:auto;padding-bottom:3px}.step{min-width:94px;background:#11161e;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.step .g{font-size:12px;color:var(--muted)}.step .guessv{font-weight:900;margin-top:4px}.modeTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.modeTabs button{background:#222a35;color:#fff;border:1px solid var(--line);padding:12px 6px;font-size:13px}.modeTabs button.active{background:var(--blue)}
+.grainWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}.grainChart{display:flex;gap:4px;align-items:flex-end;min-width:max-content;padding:46px 4px 0;position:relative}.grainCol{width:54px;flex:0 0 54px;text-align:center;position:relative}.grainStack{height:228px;display:flex;flex-direction:column-reverse;justify-content:flex-start;gap:2px;align-items:stretch}.grainBlock{height:18px;border-radius:2px}.grainBlue{background:#4266e8}.grainYellow{background:#fff36a}.grainGreen{background:#69ef45}.grainRed{background:#ff4f4f}.grainMeta{margin-top:5px;font-size:11px;line-height:1.2;color:var(--muted)}.grainType{font-size:11px;font-weight:900;margin-top:3px;padding:4px 2px;border-radius:4px}.grainType.bb{background:var(--red);color:white}.grainType.reg{background:#456cf0;color:white}.grainType.end{background:#9b3b44;color:white}.chainLane{position:absolute;left:4px;right:4px;height:22px;pointer-events:none}.chainBand{position:absolute;height:18px;border-radius:5px;background:rgba(80,184,216,.76);color:white;font-size:11px;font-weight:900;line-height:18px;text-align:center;white-space:nowrap;overflow:hidden}
+.practiceStatus{border:1px solid #334055;background:#111824;border-radius:14px;padding:13px}.practiceStatus .big{font-size:22px;font-weight:950;margin-top:3px}.practiceBonusBadge{margin-top:12px;border-radius:12px;padding:16px 14px;text-align:center;color:#fff;font-size:30px;font-weight:950;letter-spacing:.03em;box-shadow:0 6px 18px rgba(0,0,0,.24)}.practiceBonusBadge.bb{background:var(--red)}.practiceBonusBadge.reg{background:#456cf0}.practiceBonusBadge .bonusType{font-size:34px;font-weight:950}.practiceBonusBadge .bonusGap{font-size:30px;font-weight:950;margin-left:8px}.practiceBonusBadge small{display:block;font-size:14px;font-weight:850;opacity:.9;margin-top:4px;letter-spacing:0}.rankGuide{margin-top:14px;border:1px solid #315079;background:#0f1a27;border-radius:14px;padding:13px}.rankGuideTitle{font-size:14px;font-weight:900;color:#9ec7ff;margin-bottom:9px}.rankGuideGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rankGuideBox{background:#0d141d;border:1px solid #29415f;border-radius:11px;padding:10px}.rankGuideBox.full{grid-column:1/-1}.rankGuideLabel{font-size:11px;color:var(--muted);margin-bottom:4px}.rankGuideValue{font-size:19px;font-weight:950;line-height:1.25}.rankGuideNote{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.55}.money{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.money>div{background:#0f141c;border:1px solid var(--line);border-radius:12px;padding:10px}.money .mv{font-size:19px;font-weight:900;margin-top:3px}.decisionTag{display:inline-block;padding:5px 9px;border-radius:999px;background:#252d39;color:#dce5f1;font-size:11px;font-weight:800}.finalEval{background:#101923;border:1px solid #29415f;border-radius:14px;padding:14px;margin-top:12px}.evalTitle{font-weight:950;font-size:21px;margin-bottom:5px}.scrollAnchor{scroll-margin-top:12px}
+.storeConfig{margin-top:12px;background:#11161e;border:1px solid var(--line);border-radius:14px;padding:0 13px}.storeConfig summary{cursor:pointer;padding:13px 0;font-size:13px;font-weight:900;color:#dbe6f5}.storeGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-bottom:10px}@media(min-width:700px){.storeGrid{grid-template-columns:repeat(6,minmax(0,1fr))}}.storeTotal{font-size:12px;font-weight:900;padding:0 0 12px}.storeTotal.ok{color:var(--green)}.storeTotal.bad{color:#ff8e84}.roleStrip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.roleStat{background:#0f141c;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.roleStat b{display:block;font-size:17px;margin-top:3px}.modelCompare{display:grid;grid-template-columns:1fr 1fr;gap:10px}.modelPanel{background:#11161e;border:1px solid var(--line);border-radius:13px;padding:12px}.modelPanel.beta{border-color:#554c73;background:#171526}.modelPanel .modelName{font-size:11px;color:var(--muted);font-weight:900}.modelPanel .modelRank{font-size:28px;font-weight:950;margin-top:2px}.modelPanel .modelP4{font-size:20px;font-weight:900}.signalBox{border:1px solid #745f2c;background:#251f12;border-radius:13px;padding:12px;color:#ffe29a;margin-bottom:10px}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>ジャグラー α判定</h1>
-<div class="sub">着席前のP4+判定から、実戦中のBB・REG・ハマり、持ちメダル、台移動まで管理します。</div>
-
-<div class="card"><div class="card-title"><h2>① 着席前判定</h2></div>
-<div class="grid2"><div><label>機種</label><select id="machine">
-<option value="my5">マイジャグラーV</option><option value="gogo3">ゴーゴージャグラー3</option><option value="imex">アイムジャグラーEX</option><option value="girls">ジャグラーガールズSS</option></select></div>
-<div><label>8桁入力（GGGGBBRR）</label><input id="compact" inputmode="numeric" maxlength="8" placeholder="例：30560811"></div></div>
-<div class="grid3" style="margin-top:10px"><div><label>G数</label><input id="startG" type="number"></div><div><label>BB</label><input id="startBB" type="number"></div><div><label>REG</label><input id="startREG" type="number"></div></div>
-<div style="margin-top:10px"><label>任意の投資上限（円）</label><input id="userCap" type="number" step="1000"></div>
-<div id="pendingCarry" class="carryBox hidden"><strong>前台から持ちメダル引継ぎ</strong><div id="pendingCarryText" class="carryInfo"></div><button id="cancelCarryBtn" class="tiny" style="margin-top:8px">引継ぎを取り消す</button></div>
-<button class="primary big-action" id="judgeBtn">α判定して実戦開始</button></div>
-
-<div class="card hidden" id="initialResult"><div class="card-title"><h2>開始判定</h2><button class="tiny collapseBtn" id="toggleInitialBtn">折りたたむ</button></div><div id="initialResultBody"></div></div>
-
-<div class="card hidden" id="playCard"><div class="card-title"><h2>② 実戦入力</h2></div>
-<div class="modelSwitch"><div class="checkRow"><input type="checkbox" id="useBeta"><label for="useBeta">βモデル（ぶどう込みP4+）を併用する</label></div><div class="note" style="margin-top:7px">α＝G・BB・REGのみ。β＝α＋実戦開始後のぶどう。β判定はBB / REG / ハマり更新時に表示し、機種×実戦G数で信頼度を自動判定します。履歴は「高」到達後だけβへ自動切替します。</div></div>
-<div class="counterPanel"><div class="counterTitle">小役カウンター</div><div class="counterGrid">
-<div class="counterItem"><div class="counterName">🍇 ぶどう</div><div class="counterValue" id="grapeCount">0</div><div class="counterBtns"><button type="button" class="counterMinus" data-counter="grape" data-delta="-1">−</button><button type="button" class="counterPlus" data-counter="grape" data-delta="1">＋</button></div></div>
-<div class="counterItem"><div class="counterName">🔁 リプレイ</div><div class="counterValue" id="replayCount">0</div><div class="counterBtns"><button type="button" class="counterMinus" data-counter="replay" data-delta="-1">−</button><button type="button" class="counterPlus" data-counter="replay" data-delta="1">＋</button></div></div>
-<div class="counterItem"><div class="counterName">🍒 チェリー</div><div class="counterValue" id="cherryCount">0</div><div class="counterBtns"><button type="button" class="counterMinus" data-counter="cherry" data-delta="-1">−</button><button type="button" class="counterPlus" data-counter="cherry" data-delta="1">＋</button></div></div>
-</div><div class="counterMeta"><div class="miniStat"><div class="k">最新確定G数</div><div class="v" id="counterGames">0G</div></div><div class="miniStat"><div class="k">ぶどう確率</div><div class="v" id="grapeRate">—</div></div></div><div class="note" style="margin-top:8px">＋を通常入力、−を訂正用として使います。</div></div>
-<div class="eventInputRow">
-<div><label>イベント</label><div class="eventButtons">
-<button type="button" class="eventBtn active" data-event="BB">BB</button>
-<button type="button" class="eventBtn" data-event="REG">REG</button>
-<button type="button" class="eventBtn" data-event="HAMA">ハマり</button>
-</div></div>
-<div><label>G数</label><input id="eventG" type="number" min="1" inputmode="numeric" placeholder="例：150"></div>
-</div>
-<button class="primary big-action" id="recordBtn">記録して再判定</button><div id="currentResult" style="margin-top:12px"></div></div>
-
-<div class="card hidden" id="balanceCard"><div class="card-title"><h2 id="balanceTitle">持ちメダル・推定収支</h2></div><div class="balanceBox">
-<div class="balanceStats">
-<div class="balanceStat"><div class="bk">現金投資</div><div class="bv" id="cashInvestView">0円</div></div>
-<div class="balanceStat"><div class="bk">持込メダル</div><div class="bv" id="carryInView">0枚</div></div>
-<div class="balanceStat"><div class="bk" id="medalLabel">推定持ちメダル</div><div class="bv" id="liveMedalsView">0枚</div></div>
-<div class="balanceStat"><div class="bk" id="returnLabel">推定回収額</div><div class="bv" id="liveReturnView">0円</div></div>
-<div class="balanceStat"><div class="bk" id="profitLabel">台単体 推定収支</div><div class="bv" id="liveProfitView">0円</div></div>
-<div class="balanceStat"><div class="bk" id="overallLabel">前台含む 推定収支</div><div class="bv" id="overallProfitView">0円</div></div>
-</div>
-<div class="balanceBtns"><button class="primary" id="invest1000Btn">＋1,000円 投資</button><button class="secondary" id="investMinus1000Btn">−1,000円 訂正</button></div>
-<div class="grid2" style="margin-top:10px"><div><label>実際の持ちメダル枚数で修正</label><input id="actualMedals" type="number" min="0"></div><div style="display:flex;align-items:end;gap:8px"><button class="secondary" id="setMedalsBtn">枚数を修正</button><button class="secondary" id="zeroMedalsBtn">0枚</button></div></div>
-<div class="note" id="balanceNote" style="margin-top:9px">推定は40Gで50枚消費を基準。持込メダルは現金投資と分離して管理します。</div>
-
-<div class="carryBox"><strong>台移動する</strong><div class="carryInfo">現在の持ちメダルを次の台へ引き継げます。正確に数えなくても、50枚刻み概算または現在の推定値で移動できます。</div>
-<div class="carryModes"><button class="secondary" id="carryExactBtn">正確入力</button><button class="secondary" id="carryApproxBtn">50枚刻み</button><button class="secondary" id="carryAutoBtn">自動推定</button></div>
-</div></div></div>
-
-<div class="card hidden" id="historyCard"><div class="card-title"><h2>実戦履歴</h2><button class="tiny" id="undoBtn">↶ 1つ戻す</button></div><div id="history" class="history"></div>
-<div class="graphBox"><div class="card-title" style="margin-bottom:5px"><h2 style="font-size:14px">P4+・推定収支 推移グラフ</h2></div><div id="currentGraph"></div></div>
-</div>
-
-<div class="card hidden" id="endCard"><div class="card-title"><h2>③ 実戦終了・コピー</h2><button class="tiny collapseBtn" id="toggleEndBtn">開く</button></div>
-<div id="endCardBody" class="collapsedBody"><div class="grid2"><div><label>終了理由</label><select id="endReason"><option>P4+低下</option><option>投資上限</option><option>時間切れ</option><option>閉店</option><option>台移動</option><option selected>任意終了</option></select></div><div><label>実投資額（任意）</label><input id="actualInvest" type="number" step="1000"></div></div>
-<div style="margin-top:10px"><label>回収額（任意）</label><input id="actualReturn" type="number" step="100"></div>
-<div class="timeGrid">
-<div><label>実戦日（任意）</label><input id="playDate" type="date"></div>
-<div></div>
-<div><label>開始時刻（任意・4桁）</label><input id="startTime4" inputmode="numeric" maxlength="4" placeholder="例：2214"></div>
-<div><label>終了時刻（任意・4桁）</label><input id="endTime4" inputmode="numeric" maxlength="4" placeholder="例：2358"></div>
-</div>
-<div class="note" style="margin-top:7px">2214 → 22:14 として保存します。実戦日が未入力なら保存時の日付を使用します。</div>
-<div style="margin-top:10px"><label>メモ（任意）</label><input id="memo"></div>
-<button class="secondary big-action" id="finishBtn">終了内容を反映</button>
-<div style="margin-top:12px"><label>コピーされる実戦記録</label><div id="logPreview" class="logbox"></div></div>
-<button class="primary big-action" id="copyBtn">📋 実戦記録をコピー</button><button class="secondary big-action" id="saveHistoryBtn">★ この実戦を履歴に保存</button><button class="secondary big-action" id="newBtn">新しい実戦を開始</button></div></div>
-
-<div class="card"><div class="card-title"><h2>保存済み履歴</h2><button class="tiny" id="clearHistoryBtn">履歴を全削除</button></div>
-<div class="grid2" style="margin-bottom:8px"><button class="secondary" id="exportHistoryBtn">⬇ 履歴を書き出し</button><button class="secondary" id="openCalendarBtn">📅 収支カレンダー</button></div>
-<div id="savedHistory"></div></div>
-
-<button class="tiny ruleOpen" id="openRulesBtn">判定ルール・推奨投資額を開く</button>
-</div>
-
-<div class="modalOverlay hidden" id="rulesModal">
-  <div class="modal">
-    <div class="modalTop"><h2>判定ルール</h2><button class="tiny" id="closeRulesBtn">閉じる</button></div>
-    <div class="note">S ≥ 90%、A+ ≥ 80%、A ≥ 70%、B+ ≥ 60%、B ≥ 50%、C+ ≥ 45%、C− ≥ 40%、D &lt; 40%。S / A+ / A の投資上限は同額です。</div>
-    <div class="rulegrid">
-      <div class="rule"><b>S / A+ / A</b><label>推奨投資 円</label><input id="invA" type="number" value="20000"></div>
-      <div class="rule"><b>B+</b><label>推奨投資 円</label><input id="invBp" type="number" value="15000"></div>
-      <div class="rule"><b>B</b><label>推奨投資 円</label><input id="invB" type="number" value="10000"></div>
-      <div class="rule"><b>C+</b><label>推奨投資 円</label><input id="invCp" type="number" value="3000"></div>
-    </div>
+<h1>ジャグラー設定看破ゲーム α</h1>
+<div class="sub">ヒントなしでも、αモデルを見ながらでも、同じ結果を使って設定看破・実戦判断を練習できます。</div>
+<div class="card">
+  <div class="grid">
+    <div><label>機種</label><select id="machine"><option value="my5">マイジャグラーV</option><option value="imex">アイムジャグラーEX</option><option value="neoim">ネオアイムジャグラーEX</option><option value="gogo3">ゴーゴージャグラー3</option><option value="happy3">ハッピージャグラーV III</option><option value="funky2">ファンキージャグラー2</option><option value="girlsSS">ジャグラーガールズSS</option><option value="mr">ミスタージャグラー</option><option value="ultra">ウルトラミラクルジャグラー</option></select></div>
+    <div><label>最終ゲーム数</label><select id="games"><option value="1000">1000G</option><option value="2000">2000G</option><option value="3000">3000G</option><option value="4000">4000G</option><option value="5000">5000G</option><option value="6000" selected>6000G</option><option value="7000">7000G</option><option value="8000">8000G</option><option value="9000">9000G</option></select></div>
+    <div><label>出題設定</label><select id="sourceSetting"><option value="random" selected>ランダム（均等）</option><option value="shop">店環境モード</option><option value="1">設定1</option><option value="2">設定2</option><option value="3">設定3</option><option value="4">設定4</option><option value="5">設定5</option><option value="6">設定6</option></select></div>
+    <div><label>開始G</label><select id="startGames"><option value="1000">1000G</option><option value="2000">2000G</option><option value="3000">3000G</option><option value="4000">4000G</option><option value="5000" selected>5000G</option><option value="6000">6000G</option><option value="7000">7000G</option><option value="8000">8000G</option></select></div>
   </div>
+  <details class="storeConfig" id="shopConfig"><summary>店環境モードの設定配分を変更</summary><div class="storeGrid"><div><label>設定1（%）</label><input id="shopSetting1" class="shopWeight" type="number" min="0" max="100" step="1" value="35"></div><div><label>設定2（%）</label><input id="shopSetting2" class="shopWeight" type="number" min="0" max="100" step="1" value="25"></div><div><label>設定3（%）</label><input id="shopSetting3" class="shopWeight" type="number" min="0" max="100" step="1" value="20"></div><div><label>設定4（%）</label><input id="shopSetting4" class="shopWeight" type="number" min="0" max="100" step="1" value="10"></div><div><label>設定5（%）</label><input id="shopSetting5" class="shopWeight" type="number" min="0" max="100" step="1" value="6"></div><div><label>設定6（%）</label><input id="shopSetting6" class="shopWeight" type="number" min="0" max="100" step="1" value="4"></div></div><div id="shopTotal" class="storeTotal ok">合計 100%</div><div class="note" style="padding-bottom:10px">店環境モードでは、この配分で真の設定を抽選します。α・βモデルの事前確率は従来どおり設定1〜6均等です。</div><div class="row" style="margin:0 0 12px"><button class="secondary" type="button" onclick="resetShopDistribution()">初期配分に戻す</button></div></details>
+  <div class="modeTabs"><button id="normalModeBtn" class="active" onclick="setPlayMode('normal')">通常看破</button><button id="progressModeBtn" onclick="setPlayMode('progress')">経過推測</button><button id="practiceModeBtn" onclick="setPlayMode('practice')">実践シミュレーション</button></div>
+  <div class="modebar"><div><b>α・βモデルをヒントとして表示</b><small>βはαに、シミュレーションされたぶどう回数を加えて判定します。</small></div><label class="switch"><input id="alphaToggle" type="checkbox"><span class="slider"></span></label></div>
+  <div class="row"><button class="primary" onclick="newQuestion()">新しい問題</button><button class="secondary" onclick="resetGuess()">推測をやり直す</button></div>
 </div>
-
-<div class="modalOverlay hidden" id="editHistoryModal">
-  <div class="modal">
-    <div class="modalTop"><h2>保存履歴を編集</h2><button class="tiny" id="closeEditHistoryBtn">閉じる</button></div>
-    <div class="note" style="margin-bottom:8px">実戦記録をそのまま手書き修正できます。収支・終了理由・メモなども自由に編集可能です。</div>
-    <textarea id="historyEditArea" class="editArea"></textarea>
-    <button class="primary big-action" id="saveEditedHistoryBtn">編集内容を保存</button>
-  </div>
+<div id="gameArea"><div class="card empty">「新しい問題」を押して設定看破を開始してください。</div></div>
+<div class="card note"><b>判定モデル：</b>αは設定1〜6を同率事前確率として総G・BB・REGから、βはさらにぶどう回数を加えてP4+（設定4〜6）を計算します。ランクは D &lt;40%、C− 40〜44.9%、C+ 45〜49.9%、B 50〜59.9%、B+ 60〜69.9%、A 70〜79.9%、A+ 80〜89.9%、S 90%以上。実践シミュレーションでは、1Gごとに3枚を投入し、機種・設定別のぶどう、リプレイ、チェリー確率と各払出しを反映します。ボーナス当選、持ち玉切れ、100G区切りに加え、αランク降格の1G目と「次のREG1回では昇格できない」状態へ変わった1G目でも継続判断を行います。</div>
 </div>
-
-<div class="modalOverlay hidden" id="historyGraphModal">
-  <div class="modal">
-    <div class="modalTop"><h2 id="historyGraphTitle">P4+・推定収支 推移グラフ</h2><button class="tiny" id="closeHistoryGraphBtn">閉じる</button></div>
-    <div id="historyGraphBody" class="graphBox modalGraph"></div>
-  </div>
-</div>
-
-<div class="modalOverlay hidden" id="calendarModal">
-  <div class="modal">
-    <div class="modalTop"><h2>収支カレンダー</h2><button class="tiny" id="closeCalendarBtn">閉じる</button></div>
-    <div class="calendarSummary">
-      <div class="calSum"><div class="bk">表示月の収支</div><div class="v" id="monthProfitView">0円</div></div>
-      <div class="calSum"><div class="bk">累計収支</div><div class="v" id="totalProfitView">0円</div></div>
-    </div>
-    <div style="display:grid;grid-template-columns:70px 1fr 70px;gap:8px;align-items:center">
-      <button class="secondary" id="prevMonthBtn">‹ 前月</button>
-      <div id="calendarMonthLabel" style="text-align:center;font-weight:900"></div>
-      <button class="secondary" id="nextMonthBtn">次月 ›</button>
-    </div>
-    <div id="calendarGrid"></div>
-    <div class="note" style="margin-top:10px">保存履歴内の「収支：」を日別に合算します。編集後の収支も反映されます。</div>
-  </div>
-</div>
-
-<div class="modalOverlay hidden" id="dayDetailModal">
-  <div class="modal">
-    <div class="modalTop"><h2 id="dayDetailTitle">日別実戦</h2><button class="tiny" id="closeDayDetailBtn">閉じる</button></div>
-    <div id="dayDetailSummary" class="note"></div>
-    <div id="dayDetailList" class="dayDetailList"></div>
-  </div>
-</div>
-
-<div class="toast" id="toast">保存しました</div>
-
 <script>
-const SPECS={
-my5:{name:"マイジャグラーV",bbPay:240,regPay:96,grapePay:8,cherryPay:2,settings:{1:[273.1,409.6],2:[270.8,385.5],3:[266.4,336.1],4:[254,290],5:[240.1,268.6],6:[229.1,229.1]},grape:{1:5.98,2:5.88,3:5.84,4:5.81,5:5.76,6:5.65}},
-gogo3:{name:"ゴーゴージャグラー3",bbPay:240,regPay:96,grapePay:8,cherryPay:2,settings:{1:[259,354.2],2:[258,332.7],3:[257,306.2],4:[254,268.6],5:[247.3,247.3],6:[234.9,234.9]},grape:{1:6.33,2:6.20,3:6.15,4:6.08,5:6.01,6:5.96}},
-imex:{name:"アイムジャグラーEX",bbPay:252,regPay:96,grapePay:8,cherryPay:2,settings:{1:[273.1,439.8],2:[269.7,399.6],3:[269.7,331],4:[259,315.1],5:[259,255],6:[255,255]},grape:{1:6.01,2:6.01,3:6.01,4:6.01,5:6.01,6:5.80}},
-girls:{name:"ジャグラーガールズSS",bbPay:240,regPay:96,grapePay:8,cherryPay:2,settings:{1:[273.1,381],2:[270.8,350.5],3:[260.1,316.6],4:[250.1,281.3],5:[243.6,270.8],6:[226,252.1]},grape:{1:5.98,2:5.98,3:5.98,4:5.98,5:5.88,6:5.83}}
+const specs={
+  my5:{name:'マイジャグラーV',bbPay:240,regPay:96,grapePay:8,replayPay:3,cherryPay:2,replay:7.298,s:{1:[273.1,409.6],2:[270.8,385.5],3:[266.4,336.1],4:[254.0,290.0],5:[240.1,268.6],6:[229.1,229.1]},grape:[0,5.98,5.88,5.84,5.81,5.76,5.65],cherry:[0,35.85,35.85,34.66,33.58,33.35,33.03]},
+  imex:{name:'アイムジャグラーEX',bbPay:252,regPay:96,grapePay:8,replayPay:3,cherryPay:2,replay:7.298,s:{1:[273.1,439.8],2:[269.7,399.6],3:[269.7,331.0],4:[259.0,315.1],5:[259.0,255.0],6:[255.0,255.0]},grape:[0,6.01,6.01,6.01,6.01,6.01,5.80],cherry:[0,33.488,33.437,33.267,33.149,32.90,32.90]},
+  neoim:{name:'ネオアイムジャグラーEX',bbPay:252,regPay:96,grapePay:8,replayPay:3,cherryPay:2,replay:7.298,s:{1:[273.1,439.8],2:[269.7,399.6],3:[269.7,331.0],4:[259.0,315.1],5:[259.0,255.0],6:[255.0,255.0]},grape:[0,6.02,6.02,6.02,6.02,6.02,5.78],cherry:[0,33.488,33.437,33.267,33.149,32.90,32.90]},
+  gogo3:{name:'ゴーゴージャグラー3',bbPay:240,regPay:96,grapePay:8,replayPay:3,cherryPay:2,replay:7.298,s:{1:[259.0,354.2],2:[258.0,332.7],3:[257.0,306.2],4:[254.0,268.6],5:[247.3,247.3],6:[234.9,234.9]},grape:[0,6.33,6.20,6.15,6.08,6.01,5.96],cherry:[0,33.403,33.301,33.200,33.099,32.900,32.801]},
+  happy3:{name:'ハッピージャグラーV III',bbPay:240,regPay:96,grapePay:8,replayPay:3,cherryPay:2,replay:7.298,s:{1:[273.1,397.2],2:[270.8,362.1],3:[263.2,332.7],4:[254.0,300.6],5:[239.2,273.1],6:[226.0,256.0]},grape:[0,6.04018,6.01027,5.98011,5.85980,5.83996,5.82025],cherry:[0,56.545,56.545,56.545,56.545,56.545,56.545]},
+  funky2:{name:'ファンキージャグラー2',bbPay:240,regPay:96,grapePay:8,replayPay:3,cherryPay:2,replay:7.298,s:{1:[266.4,439.8],2:[259.0,407.1],3:[256.0,366.1],4:[249.2,322.8],5:[240.1,299.3],6:[219.9,262.1]},grape:[0,5.94000,5.92979,5.87978,5.83009,5.80016,5.77003],cherry:[0,35.617,35.617,35.617,35.617,35.617,35.617]},
+  girlsSS:{name:'ジャグラーガールズSS',bbPay:240,regPay:96,grapePay:8,replayPay:3,cherryPay:2,replay:7.298,s:{1:[273.1,381.0],2:[270.8,350.5],3:[260.1,316.6],4:[250.1,281.3],5:[243.6,270.8],6:[226.0,252.1]},grape:[0,5.98,5.98,5.98,5.98,5.88,5.83],cherry:[0,33.61,33.51,33.30,33.20,33.10,32.90]},
+  mr:{name:'ミスタージャグラー',bbPay:240,regPay:96,grapePay:8,replayPay:3,cherryPay:2,replay:7.298,s:{1:[268.6,374.5],2:[267.5,354.2],3:[260.1,331.0],4:[249.2,291.3],5:[240.9,257.0],6:[237.4,237.4]},grape:[0,6.24212,6.18381,6.13690,6.09807,6.05973,6.01689],cherry:[0,37.236,37.236,37.236,37.236,37.236,37.236]},
+  ultra:{name:'ウルトラミラクルジャグラー',bbPay:240,regPay:96,grapePay:8,replayPay:3,cherryPay:2,replay:7.298,s:{1:[267.5,425.6],2:[261.1,402.1],3:[256.0,350.5],4:[242.7,322.8],5:[233.2,297.9],6:[216.3,277.7]},grape:[0,5.92979,5.92979,5.92979,5.92979,5.86977,5.80993],cherry:[0,35.540,35.540,34.860,34.786,34.133,33.437]}
 };
-const $=id=>document.getElementById(id), COIN_YEN=20, EXCHANGE_YEN=18.3, GAME_COIN_RATE=50/40;
-let session=null, selectedEvent=localStorage.getItem("alpha_selected_event")||"BB", pendingCarry=safeJSON("alpha_pending_carry",null);
-const pct=n=>n.toFixed(1)+"%", yen=n=>Math.round(n).toLocaleString("ja-JP")+"円";
-function safeJSON(key,fallback=null){try{let v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch(e){console.warn("storage parse failed",key,e);return fallback}}
-
-function toast(s){let t=$("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1300)}
-function alphaLogs(m,g,bb,reg){let logs=[];for(let st=1;st<=6;st++){let [bd,rd]=SPECS[m].settings[st],pB=1/bd,pR=1/rd,pN=Math.max(1e-12,1-pB-pR),n=Math.max(0,g-bb-reg);logs.push(bb*Math.log(pB)+reg*Math.log(pR)+n*Math.log(pN))}return logs}
-function normalizeLogs(logs){let mx=Math.max(...logs),w=logs.map(x=>Math.exp(x-mx)),sum=w.reduce((a,b)=>a+b,0),p=w.map(x=>x/sum);return{p4plus:(p[3]+p[4]+p[5])*100,probs:p.map(x=>x*100)}}
-function posterior(m,g,bb,reg){return normalizeLogs(alphaLogs(m,g,bb,reg))}
-function logChoose(n,k){if(k<0||k>n)return -Infinity;k=Math.min(k,n-k);let x=0;for(let i=1;i<=k;i++)x+=Math.log(n-k+i)-Math.log(i);return x}
-function betaPosterior(m,g,bb,reg,playedG,grapes){let logs=alphaLogs(m,g,bb,reg),n=Math.max(0,Math.round(playedG)),k=Math.max(0,Math.min(n,Math.round(grapes)));if(n<=0)return normalizeLogs(logs);let lc=logChoose(n,k);logs=logs.map((x,i)=>{let den=SPECS[m].grape[i+1],pg=1/den;return x+lc+k*Math.log(pg)+(n-k)*Math.log(1-pg)});return normalizeLogs(logs)}
-// 720万実戦シミュレーションを基準にしたβ信頼度。G数は「ぶどうを数えた実戦G数」。
-// 高：P4+精度の改善が明確になった領域。アイム/ガールズは3000Gまでの検証では高に未到達。
-const BETA_CONFIDENCE={
- my5:{medium:500,high:2000},
- gogo3:{medium:500,high:1500},
- imex:{medium:2000,high:null},
- girls:{medium:1500,high:null}
-};
-function betaConfidence(machine,playedG){
- let x=BETA_CONFIDENCE[machine]||{medium:Infinity,high:null},g=Math.max(0,playedG||0);
- if(x.high!=null&&g>=x.high)return{level:"高",cls:"high",useBeta:true,text:`信頼度 高（${x.high}G〜）`};
- if(g>=x.medium)return{level:"中",cls:"mid",useBeta:false,text:x.high==null?`信頼度 中（3000Gまで高未到達）`:`信頼度 中（高は${x.high}G〜）`};
- return{level:"低",cls:"low",useBeta:false,text:`信頼度 低（中は${x.medium}G〜）`};
+const DEFAULT_SHOP_DISTRIBUTION=[35,25,20,10,6,4];
+let current=null,selectedGuess=null,playMode='normal',progressG=1000,guessLog=[];
+let practice={state:'entry',g:0,decisionLog:[],exitG:null,entryG:null,wallet:0,invested:0,nextCheckpoint:null,lastEvent:'',exitWallet:0,exitInvested:0,postBonusActive:false,decisionSignal:null};
+function setPlayMode(m){playMode=m;['normal','progress','practice'].forEach(x=>document.getElementById(x+'ModeBtn').classList.toggle('active',m===x))}
+function rankOf(p){if(p>=90)return'S';if(p>=80)return'A+';if(p>=70)return'A';if(p>=60)return'B+';if(p>=50)return'B';if(p>=45)return'C+';if(p>=40)return'C−';return'D'}
+function rankIndex(r){return['D','C−','C+','B','B+','A','A+','S'].indexOf(r)}
+function alphaLogs(machine,G,BB,REG){const l=[];for(let st=1;st<=6;st++){const [bbd,rgd]=specs[machine].s[st],pb=1/bbd,pr=1/rgd,pn=Math.max(1e-12,1-pb-pr);l.push(BB*Math.log(pb)+REG*Math.log(pr)+Math.max(0,G-BB-REG)*Math.log(pn))}return l}
+function normalizeLogs(logs){const m=Math.max(...logs),w=logs.map(x=>Math.exp(x-m)),z=w.reduce((a,b)=>a+b,0),p=w.map(x=>100*x/z);return{p,p4:p[3]+p[4]+p[5]}}
+function alphaPosterior(machine,G,BB,REG){return normalizeLogs(alphaLogs(machine,G,BB,REG))}
+function logChoose(n,k){if(k<0||k>n)return-Infinity;k=Math.min(k,n-k);let x=0;for(let i=1;i<=k;i++)x+=Math.log(n-k+i)-Math.log(i);return x}
+function betaPosterior(machine,G,BB,REG,playedG,grapes){const n=Math.max(0,Math.round(playedG)),k=Math.max(0,Math.min(n,Math.round(grapes))),lc=logChoose(n,k),logs=alphaLogs(machine,G,BB,REG);if(n<=0)return normalizeLogs(logs);return normalizeLogs(logs.map((x,i)=>{const pg=1/specs[machine].grape[i+1];return x+lc+k*Math.log(pg)+(n-k)*Math.log(1-pg)}))}
+function bonusPromotionLimit(machine,G,BB,REG,type,maxG=3000){const idx=rankIndex(rankOf(alphaPosterior(machine,G,BB,REG).p4));if(idx>=7)return null;let best=null;for(let d=1;d<=maxG;d++){const p=alphaPosterior(machine,G+d,BB+(type==='BB'?1:0),REG+(type==='REG'?1:0)).p4;if(rankIndex(rankOf(p))>idx)best=d}return best}
+function nextRegCanPromote(machine,G,BB,REG){const idx=rankIndex(rankOf(alphaPosterior(machine,G,BB,REG).p4));if(idx>=7)return false;const after=alphaPosterior(machine,G+1,BB,REG+1).p4;return rankIndex(rankOf(after))>idx}
+function rankGuideHTML(machine,G,BB,REG){
+  const cur=alphaPosterior(machine,G,BB,REG).p4,curRank=rankOf(cur),idx=rankIndex(curRank),ranks=['D','C−','C+','B','B+','A','A+','S'];
+  let downG=null;
+  if(idx>0){
+    for(let d=1;d<=3000;d++){
+      if(rankIndex(rankOf(alphaPosterior(machine,G+d,BB,REG).p4))<idx){downG=d;break}
+    }
+  }
+  const bbUp=idx<7?bonusPromotionLimit(machine,G,BB,REG,'BB'):null,regUp=idx<7?bonusPromotionLimit(machine,G,BB,REG,'REG'):null;
+  const downRank=idx>0?ranks[idx-1]:null,upRank=idx<7?ranks[idx+1]:null;
+  const downText=idx===0?'これ以上の降格なし':(downG===null?'3000G以内では降格なし':`${downG}G ノーボーナス → ${downRank}`);
+  const bbText=idx===7?'これ以上の昇格なし':(bbUp===null?'1回では昇格不可':`${bbUp}G以内`);
+  const regText=idx===7?'これ以上の昇格なし':(regUp===null?'1回では昇格不可':`${regUp}G以内`);
+  return `<div class="rankGuide"><div class="rankGuideTitle">αランク 継続・撤退目安</div><div class="rankGuideGrid"><div class="rankGuideBox full"><div class="rankGuideLabel">ノーボーナス降格まで</div><div class="rankGuideValue">${downText}</div></div><div class="rankGuideBox"><div class="rankGuideLabel">${upRank?`${upRank}へ昇格 / 次がBB`:'次がBB'}</div><div class="rankGuideValue">${bbText}</div></div><div class="rankGuideBox"><div class="rankGuideLabel">${upRank?`${upRank}へ昇格 / 次がREG`:'次がREG'}</div><div class="rankGuideValue">${regText}</div></div></div><div class="rankGuideNote">現在地点の総G・BB・REGからαモデルを逆算。ボーナスやG数が進むたびに自動更新します。</div></div>`;
 }
-function eventDecision(e){
- let pg=Math.max(0,(e?.totalG||0)-(session?.start?.g||0)),conf=betaConfidence(session.machine,pg);
- if(session.useBeta&&conf.useBeta&&e?.betaP4!=null)return{model:"β",p4:e.betaP4,rank:e.betaRank,conf};
- return{model:"α",p4:e.p4,rank:e.rank,conf};
+function roleForGame(machine,setting){const sp=specs[machine],u=Math.random(),pr=1/sp.replay,pg=1/sp.grape[setting],pc=1/sp.cherry[setting];if(u<pr)return'replay';if(u<pr+pg)return'grape';if(u<pr+pg+pc)return'cherry';return'none'}
+function rolePay(machine,role){const sp=specs[machine];return role==='grape'?sp.grapePay:role==='replay'?sp.replayPay:role==='cherry'?sp.cherryPay:0}
+function bonusPay(machine,type){const sp=specs[machine];return type==='BB'?sp.bbPay:type==='REG'?sp.regPay:0}
+function simulate(machine,setting,target){
+  const sp=specs[machine],[bbd,rgd]=sp.s[setting],pbb=1/bbd,preg=1/rgd;
+  let bb=0,reg=0,diff=0,lastHit=0;const hits=[],hitByG={},pts=[[0,0]],baseNet=Array(target+1).fill(0),coinCum=Array(target+1).fill(0),bbCum=Array(target+1).fill(0),regCum=Array(target+1).fill(0),roleByG=Array(target+1).fill('none'),roles={grape:Array(target+1).fill(0),replay:Array(target+1).fill(0),cherry:Array(target+1).fill(0)};
+  for(let g=1;g<=target;g++){
+    const role=roleForGame(machine,setting),net=-3+rolePay(machine,role);roleByG[g]=role;baseNet[g]=net;diff+=net;
+    for(const key of['grape','replay','cherry'])roles[key][g]=roles[key][g-1]+(role===key?1:0);
+    let type=null;const u=Math.random();if(u<pbb){type='BB';bb++}else if(u<pbb+preg){type='REG';reg++}
+    if(type){diff+=bonusPay(machine,type);const h={g,gap:g-lastHit,type,diff:Math.round(diff)};hits.push(h);hitByG[g]=h;lastHit=g}
+    coinCum[g]=diff;bbCum[g]=bb;regCum[g]=reg;if(g%10===0||type)pts.push([g,diff])
+  }
+  if(pts[pts.length-1][0]!==target)pts.push([target,diff]);
+  return{machine,setting,target,hits,hitByG,pts,baseNet,coinCum,bbCum,regCum,roleByG,roles}
 }
-function rankInfo(p){
- if(p>=90)return{label:"S",cls:"S",invest:+$("invA").value};
- if(p>=80)return{label:"A+",cls:"Aplus",invest:+$("invA").value};
- if(p>=70)return{label:"A",cls:"A",invest:+$("invA").value};
- if(p>=60)return{label:"B+",cls:"B",invest:+$("invBp").value};
- if(p>=50)return{label:"B",cls:"B",invest:+$("invB").value};
- if(p>=45)return{label:"C+",cls:"Cplus",invest:+$("invCp").value};
- if(p>=40)return{label:"C−",cls:"Cminus",invest:0};
- return{label:"D",cls:"D",invest:0}
+function roleCountsBetween(c,from,to){const a=Math.max(0,Math.min(from,c.target)),b=Math.max(a,Math.min(to,c.target));return{grape:c.roles.grape[b]-c.roles.grape[a],replay:c.roles.replay[b]-c.roles.replay[a],cherry:c.roles.cherry[b]-c.roles.cherry[a],games:b-a}}
+function snapshotAt(c,g){g=Math.max(0,Math.min(g,c.target));const hits=c.hits.filter(h=>h.g<=g),bb=c.bbCum[g],reg=c.regCum[g];let pts=c.pts.filter(p=>p[0]<=g);if(!pts.length||pts[pts.length-1][0]!==g)pts=[...pts,[g,c.coinCum[g]]];const a=alphaPosterior(c.machine,g,bb,reg);return{target:g,hits,bb,reg,pts,alpha:a,diff:Math.round(c.coinCum[g])}}
+function buildNormalBlocks(gap){const blocks=Math.max(1,Math.ceil(gap/100));let out='';for(let i=1;i<=blocks;i++){let cls='grainBlue';if(i>=6)cls='grainGreen';else if(i>=4)cls='grainYellow';out+=`<div class="grainBlock ${cls}"></div>`}return out}
+function buildEndBlocks(gap){if(gap<=0)return'';const blocks=Math.max(1,Math.ceil(gap/100));let out='';for(let i=1;i<=blocks;i++){let cls='grainBlue';if(i>=6)cls='grainGreen';else if(i>=4)cls='grainYellow';if(i===blocks)cls='grainRed';out+=`<div class="grainBlock ${cls}"></div>`}return out}
+function graphSVG(pts,target){const vals=pts.map(x=>x[1]),ymin=Math.min(-500,Math.floor(Math.min(...vals)/500)*500),ymax=Math.max(500,Math.ceil(Math.max(...vals)/500)*500),W=760,H=300,padL=52,padR=16,padT=16,padB=30,iw=W-padL-padR,ih=H-padT-padB,x=g=>padL+g/target*iw,y=v=>padT+(ymax-v)/(ymax-ymin)*ih;let grid='';for(let i=0;i<=4;i++){let g=target*i/4;grid+=`<line class="axis" x1="${x(g)}" y1="${padT}" x2="${x(g)}" y2="${H-padB}"/><text class="glabel" x="${x(g)-12}" y="${H-8}">${Math.round(g)}</text>`}for(let i=0;i<=4;i++){let v=ymin+(ymax-ymin)*i/4;grid+=`<line class="${Math.abs(v)<1?'zero':'axis'}" x1="${padL}" y1="${y(v)}" x2="${W-padR}" y2="${y(v)}"/><text class="glabel" x="3" y="${y(v)+4}">${Math.round(v)}</text>`}const poly=pts.map(p=>`${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join(' ');return`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${grid}<polyline class="plot" points="${poly}"/></svg>`}
+function shopDistribution(){return[1,2,3,4,5,6].map(n=>Math.max(0,+document.getElementById(`shopSetting${n}`).value||0))}
+function updateShopDistribution(){const values=shopDistribution(),sum=values.reduce((a,b)=>a+b,0),el=document.getElementById('shopTotal'),ok=Math.abs(sum-100)<1e-9;el.textContent=`合計 ${Number.isInteger(sum)?sum:sum.toFixed(1)}%${ok?'':'（100%にしてください）'}`;el.classList.toggle('ok',ok);el.classList.toggle('bad',!ok);try{localStorage.setItem('juggler_shop_distribution',JSON.stringify(values))}catch(e){}return ok}
+function resetShopDistribution(){DEFAULT_SHOP_DISTRIBUTION.forEach((v,i)=>document.getElementById(`shopSetting${i+1}`).value=v);updateShopDistribution()}
+function initShopDistribution(){let values=null;try{values=JSON.parse(localStorage.getItem('juggler_shop_distribution'))}catch(e){}if(!Array.isArray(values)||values.length!==6||values.some(v=>!Number.isFinite(+v)||+v<0))values=DEFAULT_SHOP_DISTRIBUTION;values.forEach((v,i)=>document.getElementById(`shopSetting${i+1}`).value=v);document.querySelectorAll('.shopWeight').forEach(x=>x.addEventListener('input',updateShopDistribution));updateShopDistribution()}
+function weightedSetting(weights){let r=Math.random()*weights.reduce((a,b)=>a+b,0);for(let i=0;i<weights.length;i++){r-=weights[i];if(r<0)return i+1}return 6}
+function blankPractice(start){return{state:'entry',g:start,decisionLog:[],exitG:null,entryG:start,wallet:0,invested:0,nextCheckpoint:null,lastEvent:'',exitWallet:0,exitInvested:0,postBonusActive:false,decisionSignal:null}}
+function newQuestion(){
+  const machine=document.getElementById('machine').value,target=+document.getElementById('games').value,start=+document.getElementById('startGames').value;if(start>target){alert('開始Gは最終ゲーム数以下にしてください。');return}
+  const ss=document.getElementById('sourceSetting').value,weights=shopDistribution();if(ss==='shop'&&!updateShopDistribution())return alert('店環境モードの設定配分は、合計100%になるように入力してください。');
+  const setting=ss==='random'?1+Math.floor(Math.random()*6):ss==='shop'?weightedSetting(weights):+ss;current=simulate(machine,setting,target);current.start=start;current.sourceMode=ss==='shop'?'shop':ss==='random'?'random':'fixed';current.shopDistribution=ss==='shop'?[...weights]:null;selectedGuess=null;guessLog=[];progressG=playMode==='progress'?Math.min(start,target):target;practice=blankPractice(start);render()
 }
-function nextDown(g,bb,reg,m){
- let r=rankInfo(posterior(m,g,bb,reg).p4plus),limits={"S":90,"A+":80,"A":70,"B+":60,"B":50,"C+":45,"C−":40};
- if(r.label==="D")return 0;
- for(let x=1;x<=3000;x++)if(posterior(m,g+x,bb,reg).p4plus<limits[r.label])return x;
- return null
+function resetGuess(){selectedGuess=null;guessLog=[];if(current){progressG=playMode==='progress'?Math.min(current.start||1000,current.target):current.target;practice=blankPractice(current.start);render()}}
+function chooseGuess(n){selectedGuess=n;document.querySelectorAll('.guess button').forEach(b=>b.classList.toggle('sel',+b.dataset.n===n))}
+function isFixedQuestion(){return !!current&&current.sourceMode==='fixed'}
+function optionalGuessNote(){return isFixedQuestion()?'':`<div class="note" style="margin-top:8px">設定予想は任意です。撤退を選ぶ時だけ回答が必須です。</div>`}
+function practiceGuessButtons(){
+  if(isFixedQuestion())return '';
+  return `<div class="guess">${[1,2,3,4,5,6].map(n=>`<button data-n="${n}" onclick="chooseGuess(${n})">設定${n}</button>`).join('')}</div>${optionalGuessNote()}`
 }
-function lowerRankLabel(label){
- const order=["D","C−","C+","B","B+","A","A+","S"],i=order.indexOf(label);
- return i>0?order[i-1]:null
+function scrollToStats(){requestAnimationFrame(()=>requestAnimationFrame(()=>{const el=document.getElementById('topStatsCard');if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}))}
+function scrollToPractice(){requestAnimationFrame(()=>requestAnimationFrame(()=>{const el=document.getElementById('practiceStatusCard');if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}))}
+function scrollToPracticeDecision(){requestAnimationFrame(()=>requestAnimationFrame(()=>{const el=document.getElementById('practiceDecisionCard');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});else scrollToPractice()}))}
+function scrollAfterPracticeAdvance(){scrollToPractice()}
+function saveProgressGuess(){if(isFixedQuestion()){if(progressG<current.target){progressG=Math.min(progressG+1000,current.target);render();scrollToStats()}else{render();showFinalReveal()}return}if(!selectedGuess)return alert('設定1〜6から予想を選んでください。');guessLog=guessLog.filter(x=>x.g!==progressG);guessLog.push({g:progressG,guess:selectedGuess});selectedGuess=null;if(progressG<current.target){progressG=Math.min(progressG+1000,current.target);render();scrollToStats()}else{render();document.getElementById('reveal')?.classList.add('show');showFinalReveal()}}
+function reveal(){if(!current)return;if(!isFixedQuestion()&&!selectedGuess)return alert('設定1〜6から予想を選んでください。');const r=document.getElementById('reveal');if(r)r.classList.add('show');showFinalReveal()}
+function showFinalReveal(){const finalSnap=snapshotAt(current,current.target),lastGuess=playMode==='progress'?(guessLog.find(x=>x.g===current.target)?.guess??selectedGuess):selectedGuess,r=document.getElementById('reveal');if(!r)return;if(isFixedQuestion()){r.classList.remove('correctBox','wrongBox');r.innerHTML=`<div style="font-size:27px;font-weight:950;margin:3px 0">真の設定は <b>設定${current.setting}</b></div><div class="note">固定設定モードのため設定回答はありません。最終α：P4+ ${finalSnap.alpha.p4.toFixed(1)}% / ${rankOf(finalSnap.alpha.p4)}。</div>`;return}const hit=lastGuess===current.setting;r.classList.remove('correctBox','wrongBox');r.classList.add(hit?'correctBox':'wrongBox');r.innerHTML=`<div style="font-size:14px;color:var(--muted)">あなたの最終予想：設定${lastGuess??'—'}</div><div style="font-size:27px;font-weight:950;margin:3px 0" class="${hit?'correct':'wrong'}">${hit?'🎉 正解！ おめでとう！':'不正解'}　真の設定は <b>設定${current.setting}</b></div><div class="note">最終α：P4+ ${finalSnap.alpha.p4.toFixed(1)}% / ${rankOf(finalSnap.alpha.p4)}。</div>`}
+function practiceNetAt(g){
+  const from=practice.entryG,to=Math.max(from,Math.min(g,current.target)),coins=current.coinCum[to]-current.coinCum[from];
+  return{coins,yen:Math.round(coins*20)}
 }
-function upperRankInfo(label){
- const order=[["D",0],["C−",40],["C+",45],["B",50],["B+",60],["A",70],["A+",80],["S",90]];
- let i=order.findIndex(x=>x[0]===label);
- return (i>=0&&i<order.length-1)?{label:order[i+1][0],threshold:order[i+1][1]}:null
+function practiceMoney(g){return practiceNetAt(g)}
+function fmtSign(v){return(v>0?'+':'')+Math.round(v).toLocaleString()}
+function fmtCoins(v){const n=Math.max(0,v);return Number.isInteger(n)?n.toLocaleString():n.toFixed(1)}
+function enterPractice(sit){
+  practice.decisionLog.push({g:practice.g,type:sit?'着席':'見送り'});selectedGuess=null;
+  if(sit){practice.state='firstCash';practice.lastEvent='着席しました。最初の1000円を投資するか判断してください。'}
+  else{practice.state='afterSkip';practice.lastEvent='この台は見送りました。'}
+  render();scrollToPractice()
 }
-function bonusPromotionLimit(g,bb,reg,m,type){
- let cur=rankInfo(posterior(m,g,bb,reg).p4plus),up=upperRankInfo(cur.label);
- if(!up)return{kind:"top"};
- let best=0;
- for(let x=1;x<=1500;x++){
-   let p=posterior(m,g+x,bb+(type==="BB"?1:0),reg+(type==="REG"?1:0)).p4plus;
-   if(p>=up.threshold)best=x
- }
- return best>0?{kind:"ok",g:best,to:up.label}:{kind:"no",to:up.label}
+function investPractice(isFirst=false){
+  if(practice.g>=current.target){practice.state='finished';render();return}
+  practice.invested+=1000;practice.wallet+=50;
+  practice.decisionLog.push({g:practice.g,type:isFirst?'初回投資 +1000円':'追加投資 +1000円'});
+  practice.lastEvent=`1000円を投資。持ち玉に50枚を追加しました。`;
+  selectedGuess=null;
+  advancePracticePlay();
 }
-function rankCard(g,bb,reg,m,cap){
- let p=posterior(m,g,bb,reg),r=rankInfo(p.p4plus),d=nextDown(g,bb,reg,m),inv=cap>0?Math.min(cap,r.invest):r.invest;
- let pg=session?Math.max(0,g-session.start.g):0, gc=session?.counters?.grape||0, grapeRate=(gc>0&&pg>0)?pg/gc:null;
- let betaHtml="";if(session?.useBeta){let b=betaPosterior(m,g,bb,reg,pg,gc),br=rankInfo(b.p4plus),bc=betaConfidence(m,pg);betaHtml=`<div class="betaBox"><div class="betaTitle">β P4+（α＋ぶどう）</div><div class="betaP4">${pct(b.p4plus)}　${br.label}</div><div class="betaHint">実戦 ${pg}G / ぶどう ${gc}回${grapeRate?` / 1/${grapeRate.toFixed(2)}`:""}</div><div class="betaConfidence ${bc.cls}">${bc.text}</div></div>`}
- let lower=lowerRankLabel(r.label), bbUp=bonusPromotionLimit(g,bb,reg,m,"BB"), regUp=bonusPromotionLimit(g,bb,reg,m,"REG");
- let battle=d===null?"降格ラインなし":`<b>${d}G</b> ノーボーナスで <b>${r.label} → ${lower||"D"}</b>`;
- let promo;
- if(r.label==="S"){
-   promo=`<div class="promoGood">現在Sランクのため、これ以上のランク昇格はありません。</div>`
- }else{
-   let fmt=(x,t)=>x.kind==="ok"?`<b>${x.g}G以内</b>の${t}で <b>${x.to}</b>へ`:`${t}1回では${x.to}に届きません`;
-   promo=`<div>${fmt(bbUp,"BB")}</div><div style="margin-top:5px">${fmt(regUp,"REG")}</div>`
- }
- return `<div class="rankbox"><div class="rank ${r.cls}">${r.label}</div><div><div class="muted">α P4+　<span style="margin-left:8px">🍇 ${grapeRate?`1/${grapeRate.toFixed(2)}`:"—"}</span></div><div class="p4">${pct(p.p4plus)}</div><div class="note">${SPECS[m].name} 設定4〜6合計事後確率</div></div></div>
- <div class="stats">
-  <div class="stat"><div class="k">現在データ</div><div class="v">${g}G<br>BB${bb} REG${reg}</div></div>
-  <div class="stat"><div class="k">推奨投資上限</div><div class="v">${yen(inv)}</div></div>
-  <div class="stat"><div class="k">降格まで</div><div class="v">${d===null?"—":d+"G"}</div></div>
-  <div class="stat"><div class="k">次の判定</div><div class="v">${d===null?r.label:(lower||"D")}</div></div>
- </div>
- <div class="decisionSummary">あと何G勝負できるか： ${battle}</div>
- <div class="promotionBox"><div class="promotionTitle">ランク昇格</div>${promo}</div>${betaHtml}`
+function advancePracticePlay(){
+  if(practice.g>=current.target){practice.state='finished';render();scrollAfterPracticeAdvance();return}
+  // 現金投資で追っているだけの間は100G区切りを作らない。
+  // 一度ボーナス後の「ここから100G」を選んだ場合だけ nextCheckpoint を有効にする。
+  const goal=practice.postBonusActive&&practice.nextCheckpoint!==null
+    ?Math.min(practice.nextCheckpoint,current.target)
+    :current.target;
+  while(practice.g<goal){
+    if(practice.wallet<3){practice.state='needCash';practice.lastEvent=`${practice.g}Gで次ゲームの3枚を投入できなくなりました。`;render();scrollAfterPracticeAdvance();return}
+    const prevG=practice.g,prevBB=current.bbCum[prevG],prevREG=current.regCum[prevG],prevRank=rankOf(alphaPosterior(current.machine,prevG,prevBB,prevREG).p4),prevRegCan=nextRegCanPromote(current.machine,prevG,prevBB,prevREG),nextG=prevG+1;
+    practice.wallet+=current.baseNet[nextG];practice.g=nextG;
+    const hit=current.hitByG[nextG];
+    if(hit){
+      const pay=bonusPay(current.machine,hit.type);practice.wallet+=pay;practice.postBonusActive=false;practice.nextCheckpoint=null;practice.decisionSignal=null;
+      practice.lastEvent=`${nextG}Gで${hit.type}当選、${pay}枚を持ち玉へ加算。ここで撤退するか、ここから100G打つか判断してください。`;
+      practice.state=practice.g>=current.target?'finalDecision':'bonusDecision';render();scrollAfterPracticeAdvance();return
+    }
+    const nowBB=current.bbCum[nextG],nowREG=current.regCum[nextG],nowRank=rankOf(alphaPosterior(current.machine,nextG,nowBB,nowREG).p4),nowRegCan=nextRegCanPromote(current.machine,nextG,nowBB,nowREG),signals=[];
+    if(rankIndex(nowRank)<rankIndex(prevRank))signals.push(`αランクが ${prevRank} → ${nowRank} に降格`);
+    if(prevRegCan&&!nowRegCan&&nowRank!=='S')signals.push('次のREG1回では上位ランクへ昇格できない状態に変化');
+    if(signals.length){practice.state='signalDecision';practice.decisionSignal=signals;practice.lastEvent=`${nextG}G：${signals.join('／')}。継続判断を行います。`;render();scrollAfterPracticeAdvance();return}
+  }
+  if(practice.g>=current.target){practice.state='finalDecision';practice.lastEvent='最終Gに到達しました。';render();scrollAfterPracticeAdvance();return}
+  // ここに来るのは「当選後100G」を完走した場合のみ。
+  practice.postBonusActive=false;practice.nextCheckpoint=null;
+  practice.state='checkpoint';practice.lastEvent=`${practice.g}G：直前の当選から100G消化しました。`;
+  render();scrollAfterPracticeAdvance()
 }
-function finance(){if(!session.finance)session.finance={cashInvest:0,carryIn:0,adjust:0,carryMode:null,priorProfit:0,priorCashInvest:0};if(session.finance.priorProfit==null)session.finance.priorProfit=0;if(session.finance.priorCashInvest==null)session.finance.priorCashInvest=0;return session.finance}
-function counters(){if(!session.counters)session.counters={grape:0,replay:0,cherry:0};return session.counters}
-function playedGames(){return session?Math.max(0,session.current.g-session.start.g):0}
-function bonusMedalsForEvents(events){let m=0;for(const e of events||[]){if(e.type==="BB")m+=SPECS[session.machine].bbPay;if(e.type==="REG")m+=SPECS[session.machine].regPay}return m}
-function estimatedRawMedals(){if(!session)return 0;let f=finance(),m=f.carryIn+f.cashInvest/COIN_YEN-playedGames()*GAME_COIN_RATE+f.adjust+bonusMedalsForEvents(session.events);return Math.max(0,m)}
-function actualRawMedals(){if(!session)return 0;let f=finance(),c=counters(),sp=SPECS[session.machine],m=f.carryIn+f.cashInvest/COIN_YEN-playedGames()*3+c.replay*3+c.grape*sp.grapePay+c.cherry*sp.cherryPay+f.adjust+bonusMedalsForEvents(session.events);return Math.max(0,m)}
-function rawMedals(){return session?.useBeta?actualRawMedals():estimatedRawMedals()}
-function moneyState(){let f=finance(),med=rawMedals(),ret=med*EXCHANGE_YEN,profit=ret-f.cashInvest-f.carryIn*EXCHANGE_YEN,totalCashInvest=(f.priorCashInvest||0)+f.cashInvest,overallProfit=ret-totalCashInvest;return{...f,med,ret,profit,totalCashInvest,overallProfit}}
-function renderBalance(){
- if(!session)return;
- let s=moneyState(),actual=!!session.useBeta;
- $("balanceTitle").innerHTML=`持ちメダル・${actual?"実数":"推定"}収支 <span class="modeBadge ${actual?"actual":"estimate"}">${actual?"小役実数":"推定"}</span>`;
- $("medalLabel").textContent=actual?"持ちメダル":"推定持ちメダル";$("returnLabel").textContent=actual?"回収額":"推定回収額";$("profitLabel").textContent=`台単体 ${actual?"収支":"推定収支"}`;$("overallLabel").textContent=`前台含む ${actual?"収支":"推定収支"}`;
- $("balanceNote").textContent=actual?"β併用中：3枚投入、リプレイ+3枚、ぶどう+8枚、チェリー+2枚で実数追跡。数え漏れや稀役は「実際の持ちメダル枚数で修正」で補正できます。":"αのみ：通常時は40Gで50枚消費として推定します。βをONにすると小役カウントによる実数追跡へ切り替わります。";
- $("cashInvestView").textContent=yen(s.cashInvest);
- $("carryInView").textContent=(s.carryIn?((s.carryMode==="approx"||s.carryMode==="auto")?"約":""):"")+Math.round(s.carryIn)+"枚";
- $("liveMedalsView").textContent=Math.round(s.med)+"枚";
- $("liveReturnView").textContent=yen(s.ret);
- $("liveProfitView").textContent=(s.profit>=0?"+":"")+yen(s.profit);$("liveProfitView").className="bv "+(s.profit>=0?"good":"bad");
- $("overallProfitView").textContent=(s.overallProfit>=0?"+":"")+yen(s.overallProfit);$("overallProfitView").className="bv "+(s.overallProfit>=0?"good":"bad");
- if(!$("actualInvest").dataset.manual || $("actualInvest").dataset.manual!=="1")$("actualInvest").value=s.cashInvest||""
+function practiceContinue(){
+  const fromBonus=practice.state==='bonusDecision',fromSignal=practice.state==='signalDecision';
+  practice.decisionLog.push({g:practice.g,type:fromBonus?'当選後100G続行':fromSignal?'判定変化後も続行':'さらに100G続行',guess:isFixedQuestion()?null:(selectedGuess||null)});selectedGuess=null;
+  practice.decisionSignal=null;
+  practice.postBonusActive=true;
+  practice.nextCheckpoint=Math.min(practice.g+100,current.target);
+  practice.state='playing';advancePracticePlay()
 }
-
-function estimateProfitAt(s,eventCount){
- let f=s.finance||{cashInvest:0,carryIn:0,adjust:0}, medals=f.carryIn+f.cashInvest/COIN_YEN+(f.adjust||0), events=(s.events||[]).slice(0,eventCount);
- if(s.useBeta&&eventCount>0){let e=events[events.length-1],sp=SPECS[s.machine],pg=Math.max(0,e.totalG-s.start.g),cc=e.counters||{grape:0,replay:0,cherry:0};medals+=-pg*3+(cc.replay||0)*3+(cc.grape||0)*sp.grapePay+(cc.cherry||0)*sp.cherryPay;for(const q of events){if(q.type==="BB")medals+=sp.bbPay;if(q.type==="REG")medals+=sp.regPay}}
- else{for(const e of events){medals-=e.gap*GAME_COIN_RATE;if(e.type==="BB")medals+=SPECS[s.machine].bbPay;if(e.type==="REG")medals+=SPECS[s.machine].regPay}}
- medals=Math.max(0,medals);return medals*EXCHANGE_YEN-f.cashInvest-f.carryIn*EXCHANGE_YEN
+function practiceAddCash(){
+  practice.decisionLog.push({g:practice.g,type:'追う',guess:isFixedQuestion()?null:(selectedGuess||null)});
+  selectedGuess=null;investPractice(false)
 }
-function graphPointsFromSession(s){
- let pts=[{label:"開始",p4:s.start.p4,g:s.start.g,profit:estimateProfitAt(s,0)}];
- (s.events||[]).forEach((e,i)=>pts.push({label:(e.type==="HAMA"?"ハマり":e.type)+" "+e.gap+"G",p4:e.p4,g:e.totalG,profit:estimateProfitAt(s,i+1)}));
- return pts
+function practiceWithdraw(requireGuess=true){
+  if(requireGuess&&!isFixedQuestion()&&!selectedGuess)return alert('撤退時は設定1〜6から予想を選んでください。');
+  practice.decisionLog.push({g:practice.g,type:'撤退',guess:isFixedQuestion()?null:(selectedGuess||null)});
+  practice.exitG=practice.g;practice.exitWallet=practice.wallet;practice.exitInvested=practice.invested;
+  practice.state=practice.g>=current.target?'finished':'afterExit';practice.lastEvent=`${practice.g}Gで撤退しました。`;selectedGuess=null;render();scrollToPractice()
 }
-function graphPointsFromLog(log){
- let pts=[],sm=log.match(/開始P4\+：\s*([0-9.]+)%/), startCarry=(log.match(/^持込メダル：(?:約)?\s*([\d,]+)枚/m)||[])[1];
- let carry=startCarry?+startCarry.replace(/,/g,""):0, runningProfit=-carry*EXCHANGE_YEN;
- if(sm)pts.push({label:"開始",p4:+sm[1],profit:runningProfit});
- let lines=log.split(/\r?\n/), machineName=(log.match(/^機種：(.+)$/m)||[])[1]||"", spec=Object.values(SPECS).find(x=>x.name===machineName), bbPay=spec?.bbPay||240, regPay=spec?.regPay||96;
- for(const line of lines){
-   let m=line.match(/^\s*(\d+)G\s+(BB|REG|ハマり).*?(?:α)?P4\+\s*([0-9.]+)%/);
-   if(m){
-     let gap=+m[1];runningProfit-=gap*GAME_COIN_RATE*EXCHANGE_YEN;
-     if(m[2]==="BB")runningProfit+=bbPay*EXCHANGE_YEN;
-     if(m[2]==="REG")runningProfit+=regPay*EXCHANGE_YEN;
-     pts.push({label:m[2]+" "+gap+"G",p4:+m[3],profit:runningProfit})
-   }
- }
- return pts
+function finishAtTarget(){
+  practice.decisionLog.push({g:practice.g,type:'最終まで実戦',guess:isFixedQuestion()?null:(selectedGuess||null)});
+  practice.exitG=practice.g;practice.exitWallet=practice.wallet;practice.exitInvested=practice.invested;practice.state='finished';selectedGuess=null;render();scrollToPractice()
 }
-function renderGraph(el,pts){
- if(!el)return;
- if(!pts||pts.length<2){el.innerHTML='<div class="note">推移データが2点以上になるとグラフを表示します。</div>';return}
- const W=Math.max(520,pts.length*64),H=330,L=56,R=70,T=42,B=48;
- const pMin=Math.max(0,Math.floor((Math.min(...pts.map(x=>x.p4))-8)/10)*10);
- const pMax=Math.min(100,Math.max(pMin+10,Math.ceil((Math.max(...pts.map(x=>x.p4))+8)/10)*10));
- let profits=pts.map(x=>Number.isFinite(x.profit)?x.profit:0), abs=Math.max(2000,...profits.map(Math.abs));
- let step=abs<=5000?1000:abs<=15000?5000:10000, prMax=Math.ceil(abs/step)*step,prMin=-prMax;
- const x=i=>L+(W-L-R)*(pts.length===1?0:i/(pts.length-1));
- const yP=v=>T+(H-T-B)*(pMax-v)/(pMax-pMin);
- const yR=v=>T+(H-T-B)*(prMax-v)/(prMax-prMin);
- let grid="",leftLabels="",rightLabels="",xlabels="";
- for(let v=pMin;v<=pMax;v+=10){let yy=yP(v);grid+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#26303b" stroke-width="1"/>`;leftLabels+=`<text x="${L-8}" y="${yy+4}" fill="#83b6ff" font-size="12" text-anchor="end">${v}%</text>`}
- for(let v=prMin;v<=prMax;v+=step){let yy=yR(v);rightLabels+=`<text x="${W-R+8}" y="${yy+4}" fill="#f5c96a" font-size="12" text-anchor="start">${v===0?"0":(v/1000)+"k"}</text>`}
- let pLine=pts.map((q,i)=>`${x(i)},${yP(q.p4)}`).join(" "),rLine=pts.map((q,i)=>`${x(i)},${yR(q.profit||0)}`).join(" ");
- let pDots=pts.map((q,i)=>`<circle cx="${x(i)}" cy="${yP(q.p4)}" r="4.5" fill="#83b6ff"/><text x="${x(i)}" y="${yP(q.p4)-10}" fill="#b9d5ff" font-size="11" font-weight="700" text-anchor="middle">${q.p4.toFixed(1)}%</text>`).join("");
- let rDots=pts.map((q,i)=>`<circle cx="${x(i)}" cy="${yR(q.profit||0)}" r="4.5" fill="#f5c96a"/><text x="${x(i)}" y="${yR(q.profit||0)+18}" fill="#ffe0a0" font-size="11" font-weight="700" text-anchor="middle">${(q.profit||0)>=0?"+":""}${Math.round(q.profit||0).toLocaleString("ja-JP")}</text>`).join("");
- let labelStep=Math.max(1,Math.ceil(pts.length/7));
- pts.forEach((q,i)=>{if(i%labelStep===0||i===pts.length-1)xlabels+=`<text x="${x(i)}" y="${H-15}" fill="#9aa4b2" font-size="11" text-anchor="middle">${q.label.replace("ハマり","H")}</text>`});
- el.innerHTML=`<div class="graphCanvas"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="P4+と推定収支の推移グラフ">
- <text x="${L}" y="19" fill="#83b6ff" font-size="13" font-weight="800">● P4+（左軸）</text>
- <text x="${L+145}" y="19" fill="#f5c96a" font-size="13" font-weight="800">● 推定収支（右軸・円）</text>
- ${grid}${leftLabels}${rightLabels}
- <line x1="${L}" y1="${yR(0)}" x2="${W-R}" y2="${yR(0)}" stroke="#59616d" stroke-width="1.4" stroke-dasharray="5 5"/>
- <polyline points="${pLine}" fill="none" stroke="#83b6ff" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/>
- <polyline points="${rLine}" fill="none" stroke="#f5c96a" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/>
- ${pDots}${rDots}${xlabels}</svg></div>
- <div class="graphLegend"><span style="color:#83b6ff">P4+ ${pts[0].p4.toFixed(1)}% → ${pts[pts.length-1].p4.toFixed(1)}%</span><span style="color:#f5c96a">推定収支 ${(pts[pts.length-1].profit||0)>=0?"+":""}${Math.round(pts[pts.length-1].profit||0).toLocaleString("ja-JP")}円</span></div>`
+function practiceNextResult(){
+  if(practice.g<current.target){practice.g=Math.min(practice.g+500,current.target);if(practice.g>=current.target)practice.state='finished';render();scrollToPractice()}else{practice.state='finished';render();scrollToPractice()}
 }
-function updateCurrentGraph(){if(session)renderGraph($("currentGraph"),graphPointsFromSession(session))}
-function toggleEnd(force){
- const body=$("endCardBody"),btn=$("toggleEndBtn");
- const collapse=force===undefined?!body.classList.contains("collapsedBody"):force;
- body.classList.toggle("collapsedBody",collapse);
- btn.textContent=collapse?"開く":"折りたたむ"
+function practiceNextHitResult(){
+  if(practice.g>=current.target){practice.state='finished';render();scrollToPractice();return}
+  const next=current.hits.find(h=>h.g>practice.g);
+  practice.g=next?Math.min(next.g,current.target):current.target;
+  if(practice.g>=current.target)practice.state='finished';
+  render();scrollToPractice()
 }
-function toggleInitial(force){
- const body=$("initialResultBody"),btn=$("toggleInitialBtn");
- const collapse=force===undefined?!body.classList.contains("collapsedBody"):force;
- body.classList.toggle("collapsedBody",collapse);btn.textContent=collapse?"開始判定を表示":"折りたたむ"
+function practiceToEndResult(){
+  practice.g=current.target;
+  practice.state='finished';
+  render();scrollToPractice()
 }
-function parseSignedYenLine(log,label){
- let re=new RegExp("^"+label+"：\\s*([+\\-−]?)\\s*([\\d,]+)円","m"),m=log.match(re);
- if(!m)return null;let n=+m[2].replace(/,/g,"");return (m[1]==="-"||m[1]==="−")?-n:n
+function hypotheticalRun(g,withExtrema=false){
+  if(practice.exitG===null)return null;
+  const start=practice.exitG,to=Math.max(start,Math.min(g,current.target)),exitYen=Math.round(practice.exitWallet*20-practice.exitInvested);let wallet=practice.exitWallet,extraInvested=0,maxYen=exitYen,minYen=exitYen,maxG=start,minG=start;
+  for(let pos=start+1;pos<=to;pos++){
+    while(wallet<3){wallet+=50;extraInvested+=1000}
+    wallet+=current.baseNet[pos];const hit=current.hitByG[pos];if(hit)wallet+=bonusPay(current.machine,hit.type);
+    if(withExtrema){const y=Math.round(wallet*20-(practice.exitInvested+extraInvested));if(y>maxYen){maxYen=y;maxG=pos}if(y<minYen){minYen=y;minG=pos}}
+  }
+  const totalYen=Math.round(wallet*20-(practice.exitInvested+extraInvested));return{wallet,extraInvested,totalYen,deltaYen:totalYen-exitYen,extrema:{maxYen,minYen,maxG,minG}}
 }
-function parseProfit(log){
- let v=parseSignedYenLine(log,"累計収支"); if(v!==null)return v;
- v=parseSignedYenLine(log,"収支"); if(v!==null)return v;
- v=parseSignedYenLine(log,"前台含む収支"); if(v!==null)return v;
- v=parseSignedYenLine(log,"前台含む推定収支"); if(v!==null)return v;
- v=parseSignedYenLine(log,"台単体収支"); if(v!==null)return v;
- v=parseSignedYenLine(log,"台単体推定収支"); if(v!==null)return v;
- let a=log.match(/^実投資：\s*([\d,]+)円/m),r=log.match(/^回収：\s*([\d,]+)円/m);
- if(a&&r)return +r[1].replace(/,/g,"")-+a[1].replace(/,/g,"");
- return null
+function hypotheticalAfterExit(g){return hypotheticalRun(g,false)}
+function postExitExtrema(toG){return hypotheticalRun(toG,true)?.extrema||null}
+function outcomeEvaluation(){
+  if(practice.state!=='finished')return'';
+  const full=practiceNetAt(current.target);
+  if(practice.exitG!==null){
+    const exYen=Math.round(practice.exitWallet*20-practice.exitInvested);
+    const hypo=hypotheticalAfterExit(current.target);
+    const deltaYen=hypo?hypo.deltaYen:0;
+    const delta=deltaYen/20;
+    if(practice.exitG>=current.target&&practice.decisionLog.some(x=>x.type==='最終まで実戦')){
+      return`<div class="finalEval"><div class="evalTitle">最終Gまで実戦完了</div><div>総投資 <b>${practice.exitInvested.toLocaleString()}円</b>、最終持ち玉 <b>${fmtCoins(practice.exitWallet)}枚</b>、実戦収支 <b>${fmtSign(Math.round(practice.exitWallet*20-practice.exitInvested))}円</b> でした。</div></div>`
+    }
+    let title,desc;
+    if(delta<=-250){title='結果ベース：撤退は良好';desc=`撤退後に最終Gまで続けていた場合、さらに ${Math.abs(Math.round(delta))}枚悪化する結果でした。`}
+    else if(delta>=250){title='結果ベース：やや早い撤退';desc=`最終Gまで続けた場合は撤退時より ${Math.round(delta)}枚伸びる結果でした。`}
+    else{title='結果ベース：妥当な撤退';desc='撤退時と最終G時の収支差は250枚未満で、大きな取り逃し・損失回避はありませんでした。'}
+    return`<div class="finalEval"><div class="evalTitle">${title}</div><div>${desc}</div><div style="margin-top:8px">撤退時：<b>${practice.exitG}G / 投資 ${practice.exitInvested.toLocaleString()}円 / 持ち玉 ${fmtCoins(practice.exitWallet)}枚 / 収支 ${fmtSign(exYen)}円</b></div><div class="note" style="margin-top:7px">これは今回の乱数結果を後から比較した評価です。判断時点の情報だけでの意思決定の良し悪しとは分けて見てください。</div></div>`
+  }
+  const first=practice.decisionLog[0];if(first?.type==='見送り')return`<div class="finalEval"><div class="evalTitle">見送り結果</div><div>開始Gから最終Gまで打っていた場合の理論上の実戦収支は <b>${fmtSign(full.coins)}枚（約${fmtSign(full.yen)}円）</b> でした。</div></div>`;
+  return''
 }
-function parseTableProfit(log){
- let v=parseSignedYenLine(log,"台単体収支"); if(v!==null)return v;
- v=parseSignedYenLine(log,"台単体推定収支"); if(v!==null)return v;
- return parseProfit(log)
+function render(){if(!current)return;const shownG=playMode==='progress'?progressG:playMode==='practice'?practice.g:current.target,snap=snapshotAt(current,shownG),a=snap.alpha,total=snap.bb+snap.reg,comb=total?snap.target/total:0,recentHits=snap.hits.slice(-20),lastHitG=snap.hits.length?snap.hits[snap.hits.length-1].g:0,tailG=Math.max(0,snap.target-lastHitG),displayItems=[];if(tailG>0)displayItems.push({kind:'end',gap:tailG,type:'終了'});[...recentHits].reverse().forEach(h=>displayItems.push({kind:'hit',...h}));const grainCols=displayItems.map(item=>{const stack=item.kind==='end'?buildEndBlocks(item.gap):buildNormalBlocks(item.gap),typeClass=item.kind==='end'?'end':item.type.toLowerCase(),label=item.kind==='end'?'終了':item.type;return`<div class="grainCol"><div class="grainStack">${stack}</div><div class="grainMeta">${item.gap}G</div><div class="grainType ${typeClass}">${label}</div></div>`}).join('')||'<div class="empty">履歴なし</div>';
+const chainRanges=[];let start=null;for(let i=0;i<snap.hits.length;i++){const h=snap.hits[i];if(h.gap<=100){if(start===null)start=Math.max(0,i-1)}else{if(start!==null&&i-start>=2)chainRanges.push([start,i-1]);start=null}}if(start!==null&&snap.hits.length-start>=2)chainRanges.push([start,snap.hits.length-1]);const globalStart=snap.hits.length-recentHits.length,endOffset=tailG>0?1:0,visibleBands=[];for(const[s,e]of chainRanges){const vs=Math.max(s,globalStart),ve=Math.min(e,snap.hits.length-1);if(vs<=ve&&ve-vs+1>=2){const leftIndex=endOffset+(snap.hits.length-1-ve),rightIndex=endOffset+(snap.hits.length-1-vs),count=rightIndex-leftIndex+1;visibleBands.push({left:leftIndex*58,width:count*58-4,count})}}const chainBands=visibleBands.map(b=>`<div class="chainBand" style="left:${b.left}px;width:${b.width}px">${b.count}連</div>`).join(''),hasHugeGap=displayItems.some(x=>x.gap>=1000),chainTop=hasHugeGap?2:20,probs=a.p.map((p,i)=>`<div class="prob"><small>設定${i+1}</small><b>${p.toFixed(1)}%</b></div>`).join(''),roleStart=playMode==='practice'?practice.entryG:0,visibleRoles=roleCountsBetween(current,roleStart,snap.target),beta=betaPosterior(current.machine,snap.target,snap.bb,snap.reg,visibleRoles.games,visibleRoles.grape),grapeRate=visibleRoles.grape?visibleRoles.games/visibleRoles.grape:null,roleScope=playMode==='practice'?'着席後':'0Gから';
+const progressBlock=playMode==='progress'?`<div class="card"><div class="section-title">経過推測モード</div><div class="note">${snap.target.toLocaleString()}G 時点の情報だけを表示しています。開始Gから1000Gごとに予想を記録します。</div><div class="progressTrack" style="margin:10px 0 8px"><div class="progressFill" style="width:${snap.target/current.target*100}%"></div></div>${guessLog.length?`<div class="timeline" style="margin-top:12px">${guessLog.sort((a,b)=>a.g-b.g).map(x=>`<div class="step"><div class="g">${x.g}G</div><div class="guessv">設定${x.guess}</div></div>`).join('')}</div>`:''}</div>`:'';
+let practiceTop='',practiceAction='';if(playMode==='practice'){
+  const live=practiceNetAt(practice.g),actualYen=Math.round(practice.wallet*20-practice.invested);
+  const frozen=practice.exitG!==null&&['afterExit','finished'].includes(practice.state);
+  const shownInvest=frozen?practice.exitInvested:practice.invested,shownWallet=frozen?practice.exitWallet:practice.wallet,shownYen=frozen?Math.round(practice.exitWallet*20-practice.exitInvested):actualYen;
+  const status=practice.state==='entry'?'着席判断':practice.state==='firstCash'?'着席済み・初回投資判断':practice.state==='needCash'?'持ち玉不足・追加投資判断':practice.state==='bonusDecision'?'ボーナス当選・継続判断':practice.state==='signalDecision'?'判定変化・継続判断':practice.state==='checkpoint'?'100Gごとの継続判断':practice.state==='finalDecision'?'最終G到達':practice.state==='afterExit'?`${practice.exitG}Gで撤退済み`:practice.state==='afterSkip'?'見送り済み':'結果確認完了';
+  const tag=['afterExit','afterSkip','finished'].includes(practice.state)?'撤退後 答え合わせ':'実戦中 当選 / 判定変化 / 100G判断';
+  const postExitHypo=practice.exitG!==null&&practice.g>=practice.exitG?hypotheticalAfterExit(practice.g):null;
+  const ext=practice.exitG!==null&&practice.g>=practice.exitG?postExitExtrema(practice.g):null;
+  const exitCompare=postExitHypo&&practice.g>practice.exitG?`<div class="finalEval" style="margin-top:10px"><div class="k">撤退後の仮想収支差（${practice.g}G時点）</div><div class="mv" style="font-size:22px;font-weight:950;margin-top:3px">${fmtSign(postExitHypo.deltaYen)}円</div><div class="note" style="margin-top:4px">撤退時の持ち玉を引き継ぎ、足りなくなった場合は1000円＝50枚を追加投資したものとして計算。仮想追加投資 ${postExitHypo.extraInvested.toLocaleString()}円 / 仮想持ち玉 ${fmtCoins(postExitHypo.wallet)}枚 / 仮想総収支 ${fmtSign(postExitHypo.totalYen)}円</div>${ext?`<div class="money" style="margin-top:10px"><div><div class="k">ここまでの最大＋収支</div><div class="mv" style="color:var(--green)">${fmtSign(ext.maxYen)}円</div><div class="note">${ext.maxG}G時点</div></div><div><div class="k">ここまでの最大−収支</div><div class="mv" style="color:#ff7f75">${fmtSign(ext.minYen)}円</div><div class="note">${ext.minG}G時点</div></div></div>`:''}</div>`:'';
+  const practiceShownG=practice.state==='afterExit'||practice.state==='finished'?practice.g:(frozen?practice.exitG:practice.g);
+  const practiceCurrentHit=current.hits.find(h=>h.g===practiceShownG);
+  let practiceBonusBadge='';
+  if(practiceCurrentHit){
+    const priorHitsAfterEntry=current.hits.filter(h=>h.g>=practice.entryG&&h.g<practiceCurrentHit.g).sort((a,b)=>a.g-b.g);
+    const prevHit=priorHitsAfterEntry.length?priorHitsAfterEntry[priorHitsAfterEntry.length-1]:null;
+    const intervalG=Math.max(0,practiceCurrentHit.g-(prevHit?prevHit.g:practice.entryG));
+    practiceBonusBadge=`<div class="practiceBonusBadge ${practiceCurrentHit.type.toLowerCase()}"><span class="bonusType">${practiceCurrentHit.type}</span><span class="bonusGap">${intervalG}G</span><small>${prevHit?'前回当たりから':'着席から'} ${intervalG}G</small></div>`;
+  }
+  practiceTop=`<div class="card scrollAnchor" id="practiceStatusCard"><div class="section-title">実践シミュレーション <span class="decisionTag">${tag}</span></div><div class="practiceStatus"><div class="k">現在の状態</div><div class="big">${status}</div>${practice.lastEvent?`<div class="note" style="margin-top:4px">${practice.lastEvent}</div>`:''}${practiceBonusBadge}<div class="money"><div><div class="k">累計投資</div><div class="mv">${shownInvest.toLocaleString()}円</div></div><div><div class="k">持ち玉</div><div class="mv">${fmtCoins(shownWallet)}枚</div></div><div><div class="k">実戦収支</div><div class="mv">${fmtSign(shownYen)}円</div></div><div><div class="k">開始から消化</div><div class="mv">${Math.max(0,(frozen?practice.exitG:practice.g)-practice.entryG)}G</div></div></div>${exitCompare}</div>${practice.decisionLog.length?`<div class="note" style="margin-top:12px;margin-bottom:5px">判断履歴・左が最新</div><div class="timeline" id="practiceTimeline">${practice.decisionLog.slice().reverse().map(x=>`<div class="step"><div class="g">${x.g}G</div><div class="guessv">${x.type}${x.guess?` / 設定${x.guess}`:''}</div></div>`).join('')}</div>`:''}${outcomeEvaluation()}</div>`;
+  const guessButtons=practiceGuessButtons();
+  if(practice.state==='entry'){
+    practiceAction=`<div class="card scrollAnchor" id="practiceDecisionCard"><div class="section-title">${snap.target}G時点：座りますか？</div><div class="note">この時点までのデータだけで着席判断してください。座った後は1000円＝50枚から実戦を開始し、1Gごとの小役抽選で持ち玉が増減します。</div><div class="row"><button class="success" onclick="enterPractice(true)">この台に座る</button><button class="secondary" onclick="enterPractice(false)">見送る</button></div></div>`
+  }else if(practice.state==='firstCash'){
+    practiceAction=`<div class="card scrollAnchor" id="practiceDecisionCard"><div class="section-title">最初の1000円を投資しますか？</div><div class="note">1000円＝50枚を持ち玉へ追加します。各Gで3枚を投入し、ぶどう+${specs[current.machine].grapePay}枚 / リプレイ+${specs[current.machine].replayPay}枚 / チェリー+${specs[current.machine].cherryPay}枚、ボーナスはBB ${specs[current.machine].bbPay}枚 / REG ${specs[current.machine].regPay}枚を反映します。</div><div class="row"><button class="primary" onclick="investPractice(true)">1000円投資して開始</button><button class="danger" onclick="practiceWithdraw(false)">打たずに撤退</button></div></div>`
+  }else if(practice.state==='needCash'){
+    practiceAction=`<div class="card scrollAnchor" id="practiceDecisionCard"><div class="section-title">${snap.target}G：次ゲーム分の持ち玉が不足</div><div class="note">3枚を投入できないため停止しました。さらに1000円を投資して追うか撤退するか判断してください。設定予想は任意ですが、撤退時だけ必須です。</div>${guessButtons}<div class="row"><button class="primary" onclick="practiceAddCash()">1000円追加投資</button><button class="danger" onclick="practiceWithdraw(true)">ここで撤退</button></div></div>`
+  }else if(practice.state==='bonusDecision'){
+    const lastHit=snap.hits[snap.hits.length-1];
+    practiceAction=`<div class="card scrollAnchor" id="practiceDecisionCard"><div class="section-title">${snap.target}G：${lastHit?lastHit.type:'ボーナス'}当選！</div><div class="note">当選したこのGでいったん停止します。ここで撤退するか、この当選Gから100G打つか判断してください。設定予想は任意ですが、撤退時だけ必須です。100G以内に再びBB/REGが当たれば、その当選Gで再度判断します。途中で持ち玉が尽きた場合は、そのGで1000円追加投資か撤退を選びます。</div>${guessButtons}<div class="row"><button class="primary" onclick="practiceContinue()">ここから100G打つ</button><button class="danger" onclick="practiceWithdraw(true)">ここで撤退</button></div></div>`
+  }else if(practice.state==='checkpoint'){
+    practiceAction=`<div class="card scrollAnchor" id="practiceDecisionCard"><div class="section-title">${snap.target}G：継続しますか？</div><div class="note">100Gの区切りまで到達しました。次の100Gを打つか撤退するか判断してください。設定予想は任意ですが、撤退時だけ必須です。途中でBB/REGが当たれば、その当選Gでいったん停止して再度判断します。持ち玉が尽きた場合は、そのGで追加投資判断になります。</div>${guessButtons}<div class="row"><button class="primary" onclick="practiceContinue()">さらに100G打つ</button><button class="danger" onclick="practiceWithdraw(true)">ここで撤退</button></div></div>`
+  }else if(practice.state==='signalDecision'){
+    const signal=(practice.decisionSignal||[]).join('／');
+    practiceAction=`<div class="card scrollAnchor" id="practiceDecisionCard"><div class="section-title">${snap.target}G：判定が変化しました</div><div class="signalBox">${signal}</div><div class="note">変化した最初の1Gで停止しています。ここから続行するか撤退するか判断してください。続行後は、新しい100G区切りで再び判断します。</div>${guessButtons}<div class="row"><button class="primary" onclick="practiceContinue()">ここから100G続行</button><button class="danger" onclick="practiceWithdraw(true)">ここで撤退</button></div></div>`
+  }else if(practice.state==='finalDecision'){
+    practiceAction=`<div class="card scrollAnchor" id="practiceDecisionCard"><div class="section-title">${snap.target}G：最終Gに到達</div><div class="note">結果を確認します。ランダム／店環境モードの最終予想は任意です。</div>${guessButtons}<div class="row"><button class="primary" onclick="finishAtTarget()">最終予想を記録して答え合わせ</button></div></div>`
+  }else if(practice.state==='afterExit'){
+    practiceAction=''
+  }else if(practice.state==='afterSkip'){
+    practiceAction=`<div class="card scrollAnchor" id="practiceDecisionCard"><div class="section-title">結果確認モード</div><div class="note">見送り後は設定予想を行わず、500Gずつ実際の推移を確認します。α・βモデルは上のスイッチで引き続き表示・非表示を切り替えられます。</div><div class="row"><button class="primary" onclick="practiceNextResult()">次の500Gへ</button></div></div>`
+  }else{
+    const finalGuess=practice.decisionLog.slice().reverse().find(x=>x.guess)?.guess??null;
+    const resultHTML=isFixedQuestion()
+      ?`<div style="font-size:26px;font-weight:950">真の設定は 設定${current.setting}</div>`
+      :finalGuess!==null
+        ?`<div class="${finalGuess===current.setting?'correct':'wrong'}" style="font-size:26px;font-weight:950">${finalGuess===current.setting?'🎉 正解！ おめでとう！':'不正解'}　予想：設定${finalGuess} / 真の設定：設定${current.setting}</div>`
+        :`<div style="font-size:26px;font-weight:950">真の設定は 設定${current.setting}</div>`;
+    practiceAction=`<div class="card scrollAnchor" id="practiceDecisionCard" style="${!isFixedQuestion()&&finalGuess!==null?(finalGuess===current.setting?'border-color:#8e302a;background:#241313':'border-color:#315b9b;background:#101a2a'):''}"><div class="section-title">実践シミュレーション終了</div>${resultHTML}<div class="note" style="margin-top:7px">判断履歴、総投資、持ち玉、撤退後の推移を確認できます。</div><div class="row"><button class="primary" onclick="newQuestion()">次の問題</button></div></div>`
+  }
 }
-function copyText(text,msg="コピーしました"){navigator.clipboard?.writeText(text);toast(msg)}
-function exportAllHistory(){
- let h=JSON.parse(localStorage.getItem("alpha_history")||"[]");
- if(!h.length)return alert("保存履歴がありません");
- let txt=h.slice().reverse().map(x=>`===== ${formatDateTimeNoSec(x.at)} =====\n${x.log}`).join("\n\n");
- const blob=new Blob([txt],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
- a.href=url;a.download=`alpha_history_${new Date().toISOString().slice(0,10)}.txt`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)
-}
-function showSavedGraph(i){
- let h=JSON.parse(localStorage.getItem("alpha_history")||"[]");if(!h[i])return;
- $("historyGraphTitle").textContent=`${new Date(h[i].at).toLocaleDateString("ja-JP")} P4+推移`;
- renderGraph($("historyGraphBody"),h[i].points||graphPointsFromLog(h[i].log));
- $("historyGraphModal").classList.remove("hidden")
-}
-let calendarDate=new Date();
-
-function historyChainKey(x,i){
- return x.chainId||("legacy-"+x.at+"-"+i)
-}
-function historyChainProfit(x){
- if(Number.isFinite(x.chainProfit))return x.chainProfit;
- return parseProfit(x.log)
-}
-function getDailyHistory(y,m,d){
- let h=JSON.parse(localStorage.getItem("alpha_history")||"[]");
- return h.map((x,i)=>({...x,_index:i})).filter(x=>{
-   let dt=new Date(x.at);return dt.getFullYear()===y&&dt.getMonth()===m&&dt.getDate()===d
- })
-}
-function dailyChainTotal(items){
- let latest={};
- for(const x of items){
-   let k=historyChainKey(x,x._index),prev=latest[k];
-   if(!prev||x.at>prev.at)latest[k]=x
- }
- return Object.values(latest).reduce((sum,x)=>{let p=historyChainProfit(x);return sum+(p===null?0:p)},0)
-}
-function overallCalendarTotal(h){
- let latest={};
- h.forEach((x,i)=>{let k=historyChainKey(x,i),prev=latest[k];if(!prev||x.at>prev.at)latest[k]={...x,_index:i}});
- return Object.values(latest).reduce((sum,x)=>{let p=historyChainProfit(x);return sum+(p===null?0:p)},0)
-}
-function showDayDetail(y,m,d){
- let items=getDailyHistory(y,m,d),total=dailyChainTotal(items);
- $("dayDetailTitle").textContent=`${y}年${m+1}月${d}日`;
- $("dayDetailSummary").innerHTML=`この日の収支：<b class="${total>=0?"good":"bad"}">${total>=0?"+":""}${Math.round(total).toLocaleString("ja-JP")}円</b>`;
- $("dayDetailList").innerHTML=items.length?items.sort((a,b)=>a.at-b.at).map(x=>{
-   let s=parseLogSummary(x.log),tp=parseTableProfit(x.log),cp=historyChainProfit(x);
-   let move=(x.log.match(/^移動メダル：(.+)$/m)||[])[1];
-   return `<div class="dayDetailItem"><div class="dayDetailTop"><div><div class="dayDetailMachine">${formatDateTimeNoSec(x.at).slice(11)}　${s.machine}</div><div class="dayDetailRank">${s.sr||"—"} ${s.sp?`${s.sp}%`:""} → ${s.fr||"—"} ${s.fp?`${s.fp}%`:""}${move?`<br>移動 ${move}`:""}</div></div><div class="dayDetailProfit ${tp!=null&&tp>=0?"good":"bad"}">${tp==null?"—":`${tp>=0?"+":""}${Math.round(tp).toLocaleString("ja-JP")}円`}</div></div>${Number.isFinite(cp)?`<div class="note" style="margin-top:6px">この時点の累計 ${cp>=0?"+":""}${Math.round(cp).toLocaleString("ja-JP")}円</div>`:""}</div>`
- }).join(""):'<div class="note">保存履歴はありません。</div>';
- $("dayDetailModal").classList.remove("hidden")
-}
-function renderCalendar(){
- let h=JSON.parse(localStorage.getItem("alpha_history")||"[]"),y=calendarDate.getFullYear(),m=calendarDate.getMonth();
- let byDay={},monthTotal=0;
- for(let d=1;d<=new Date(y,m+1,0).getDate();d++){
-   let items=getDailyHistory(y,m,d);
-   if(items.length){let p=dailyChainTotal(items);byDay[d]=p;monthTotal+=p}
- }
- let total=overallCalendarTotal(h);
- $("calendarMonthLabel").textContent=`${y}年${m+1}月`;
- $("monthProfitView").textContent=(monthTotal>=0?"+":"")+yen(monthTotal);$("monthProfitView").className="v "+(monthTotal>=0?"good":"bad");
- $("totalProfitView").textContent=(total>=0?"+":"")+yen(total);$("totalProfitView").className="v "+(total>=0?"good":"bad");
- let first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),out='<div class="calendarGrid">';
- ["日","月","火","水","木","金","土"].forEach(q=>out+=`<div class="calDow">${q}</div>`);
- for(let i=0;i<first;i++)out+='<div class="calDay empty"></div>';
- for(let d=1;d<=days;d++){let p=byDay[d],has=p!==undefined;out+=`<div class="calDay ${has?"hasData":""}" ${has?`onclick="showDayDetail(${y},${m},${d})"`:""}><div class="calNum">${d}</div>${has?`<div class="calProfit ${p>=0?"good":"bad"}">${p>=0?"+":""}${Math.round(p).toLocaleString("ja-JP")}円</div>`:""}</div>`}
- out+='</div>';$("calendarGrid").innerHTML=out
-}
-
-function normalizeTime4(v){
- v=String(v||"").replace(/\D/g,"").slice(0,4);
- if(v.length!==4)return null;
- let h=+v.slice(0,2),m=+v.slice(2);
- if(h>23||m>59)return null;
- return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`
-}
-function formatDateTimeNoSec(ts){
- let d=new Date(ts);
- return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`
-}
-function sessionTimestamp(kind){
- let dateVal=$("playDate")?.value||"", timeVal=kind==="start"?$("startTime4")?.value:$("endTime4")?.value;
- let t=normalizeTime4(timeVal);
- if(dateVal&&t){
-   let [y,m,d]=dateVal.split("-").map(Number),[hh,mm]=t.split(":").map(Number);
-   return new Date(y,m-1,d,hh,mm,0,0).getTime()
- }
- return kind==="start"?(session?.startedAt||Date.now()):Date.now()
-}
-function newChainId(){return "chain-"+Date.now()+"-"+Math.random().toString(36).slice(2,8)}
-function begin(){
- let m=$("machine").value,g=+$("startG").value,bb=+$("startBB").value,reg=+$("startREG").value,cap=+$("userCap").value||0;
- if(!g||bb+reg>g)return alert("入力値を確認してください");
- let p=posterior(m,g,bb,reg),r=rankInfo(p.p4plus),carry=pendingCarry;
- session={
-   machine:m,
-   chainId:carry?.chainId||newChainId(),
-   startedAt:Date.now(),
-   start:{g,bb,reg,p4:p.p4plus,rank:r.label,recInvest:cap>0?Math.min(cap,r.invest):r.invest,userCap:cap},
-   current:{g,bb,reg},events:[],counters:{grape:0,replay:0,cherry:0},useBeta:false,
-   finance:{cashInvest:0,carryIn:carry?.medals||0,adjust:0,carryMode:carry?.mode||null,priorProfit:carry?.chainProfit||0,priorCashInvest:carry?.totalCashInvest||0},
-   moveMedals:null,moveMode:null,actualInvest:null,actualReturn:null,endReason:"任意終了",memo:""
- };
- pendingCarry=null;localStorage.removeItem("alpha_pending_carry");$("useBeta").checked=false;showSession();saveTemp()
-}
-function showSession(){["initialResult","playCard","balanceCard","historyCard","endCard"].forEach(x=>$(x).classList.remove("hidden"));$("initialResultBody").innerHTML=rankCard(session.start.g,session.start.bb,session.start.reg,session.machine,session.start.userCap);renderCounters();renderCurrent();renderHistory();renderBalance();updateCurrentGraph();updateLog();renderPending();if((session.events||[]).some(e=>e.type==="BB"||e.type==="REG"))toggleInitial(true)}
-function addEvent(){let g=+$("eventG").value,t=selectedEvent;if(!g)return;session.current.g+=g;if(t==="BB")session.current.bb++;if(t==="REG")session.current.reg++;let p=posterior(session.machine,session.current.g,session.current.bb,session.current.reg),r=rankInfo(p.p4plus),cc={...counters()},pg=playedGames(),b=session.useBeta?betaPosterior(session.machine,session.current.g,session.current.bb,session.current.reg,pg,cc.grape):null,br=b?rankInfo(b.p4plus):null;session.events.push({gap:g,type:t,p4:p.p4plus,rank:r.label,betaP4:b?.p4plus??null,betaRank:br?.label??null,totalG:session.current.g,bb:session.current.bb,reg:session.current.reg,counters:cc,grapeRate:(cc.grape>0&&pg>0)?pg/cc.grape:null});$("eventG").value="";renderCounters();renderCurrent();renderHistory();renderBalance();updateCurrentGraph();if(t==="BB"||t==="REG")toggleInitial(true);updateLog();saveTemp()}
-function undo(){if(!session?.events.length)return;session.events.pop();let s={g:session.start.g,bb:session.start.bb,reg:session.start.reg};for(const e of session.events){s.g+=e.gap;if(e.type==="BB")s.bb++;if(e.type==="REG")s.reg++}session.current=s;renderCurrent();renderHistory();renderBalance();updateCurrentGraph();if(!(session.events||[]).some(e=>e.type==="BB"||e.type==="REG"))toggleInitial(false);updateLog();saveTemp()}
-function renderCounters(){if(!session)return;let c=counters(),pg=playedGames();$("grapeCount").textContent=c.grape;$("replayCount").textContent=c.replay;$("cherryCount").textContent=c.cherry;$("counterGames").textContent=pg+"G";$("grapeRate").textContent=(c.grape>0&&pg>0)?"1/"+(pg/c.grape).toFixed(2):"—"}
-function changeCounter(name,delta){if(!session)return;let c=counters();c[name]=Math.max(0,(c[name]||0)+delta);renderCounters();renderBalance();updateLog();saveTemp()}
-function renderCurrent(){$("currentResult").innerHTML=rankCard(session.current.g,session.current.bb,session.current.reg,session.machine,session.start.userCap)}
-function medalsAtEventCount(count){
- let f=finance(),med=f.carryIn+f.cashInvest/COIN_YEN+(f.adjust||0),events=session.events.slice(0,count),sp=SPECS[session.machine];
- if(session.useBeta&&count>0){let e=events[events.length-1],pg=Math.max(0,e.totalG-session.start.g),cc=e.counters||{grape:0,replay:0,cherry:0};med+=-pg*3+(cc.replay||0)*3+(cc.grape||0)*sp.grapePay+(cc.cherry||0)*sp.cherryPay;for(const q of events){if(q.type==="BB")med+=sp.bbPay;if(q.type==="REG")med+=sp.regPay}}
- else{for(const e of events){med-=e.gap*GAME_COIN_RATE;if(e.type==="BB")med+=sp.bbPay;if(e.type==="REG")med+=sp.regPay}}
- return Math.max(0,med)
-}
-function renderHistory(){
- let el=$("history");
- if(!session.events.length){el.innerHTML='<div class="note">まだ実戦入力はありません。</div>';return}
- let f=finance();
- el.innerHTML=session.events.map((e,i)=>{
-   let med=medalsAtEventCount(i+1), profit=med*EXCHANGE_YEN-f.cashInvest-f.carryIn*EXCHANGE_YEN, overall=med*EXCHANGE_YEN-((f.priorCashInvest||0)+f.cashInvest);
-   let cls=e.type==="BB"?"bb":e.type==="REG"?"reg":"hama",name=e.type==="HAMA"?"ハマり":e.type,d=eventDecision(e),gc=e.counters?.grape??0,gr=e.grapeRate?` / 1/${e.grapeRate.toFixed(2)}`:"";
-   return `<div class="hrow"><div>#${i+1}</div><div><span class="eventBadge ${cls}">${e.gap}G ${name}</span></div><div class="metrics"><b>${d.model}</b> ${pct(d.p4)}　<b>${d.rank}</b><br><span class="muted">${e.totalG}G / BB${e.bb} / REG${e.reg} / 🍇${gc}${gr}</span><div class="hProfit">${session.useBeta?"実数":"推定"} ${Math.round(med)}枚 / 収支 ${profit>=0?"+":""}${yen(profit)}${f.priorProfit?`<br><span class="muted">前台込 ${overall>=0?"+":""}${yen(overall)}</span>`:""}</div></div></div>`
- }).join("")
-}
-function changeInvest(v){let f=finance();f.cashInvest=Math.max(0,f.cashInvest+v);$("actualInvest").dataset.manual="0";renderBalance();updateCurrentGraph();updateLog();saveTemp()}
-function correctMedals(v){v=+v;if(!Number.isFinite(v)||v<0)return;finance().adjust+=v-rawMedals();$("actualMedals").value="";renderBalance();updateCurrentGraph();updateLog();saveTemp()}
-function carry(mode){
- let med;
- if(mode==="exact"){let v=prompt("現在の持ちメダル枚数を入力してください");if(v===null)return;med=Math.max(0,+v||0)}
- else if(mode==="approx"){let base=Math.round(rawMedals()/50)*50;let v=prompt("概算枚数（50枚刻み）",String(base));if(v===null)return;med=Math.max(0,Math.round((+v||0)/50)*50)}
- else med=Math.round(rawMedals());
- let f=finance(),tableProfitAtMove=med*EXCHANGE_YEN-f.cashInvest-f.carryIn*EXCHANGE_YEN,totalCashInvest=(f.priorCashInvest||0)+f.cashInvest,chainProfit=med*EXCHANGE_YEN-totalCashInvest;
- session.moveMedals=med;session.moveMode=mode;
- pendingCarry={medals:med,mode,from:SPECS[session.machine].name,at:Date.now(),chainProfit,totalCashInvest,chainId:session.chainId};
- localStorage.setItem("alpha_pending_carry",JSON.stringify(pendingCarry));
- session.endReason="台移動";$("endReason").value="台移動";
- session.memo=(session.memo?session.memo+" / ":"")+`持ちメダル${mode==="exact"?"":"約"}${med}枚を次台へ引継ぎ`;
- $("memo").value=session.memo;renderBalance();updateLog();saveTemp();renderPending();toast("次の台へ引継ぎ設定しました")
-}
-function renderPending(){let b=$("pendingCarry");if(!pendingCarry){b.classList.add("hidden");return}b.classList.remove("hidden");let cp=pendingCarry.chainProfit;$("pendingCarryText").textContent=`${pendingCarry.from||"前台"} → ${pendingCarry.mode==="exact"?"":"約"}${pendingCarry.medals}枚を次の実戦開始時に持込${Number.isFinite(cp)?` / 前台までの推定収支 ${cp>=0?"+":""}${yen(cp)}`:""}`;}
-function makeLog(){
- if(!session)return"";
- let s=session.start,c=session.current,p=posterior(session.machine,c.g,c.bb,c.reg).p4plus,r=rankInfo(p),m=moneyState();
- let startTs=sessionTimestamp("start"),endTs=sessionTimestamp("end"),startLabel=formatDateTimeNoSec(startTs),endLabel=formatDateTimeNoSec(endTs);
- let cc=counters(),pg=playedGames(),gr=(cc.grape>0&&pg>0)?pg/cc.grape:null;
- let lines=["【α実戦記録】","",`機種：${SPECS[session.machine].name}`,`実戦開始：${startLabel}`,`実戦終了：${endLabel}`,`開始データ：${s.g}G BB${s.bb} REG${s.reg}`,`開始P4+：${pct(s.p4)}`,`開始ランク：${s.rank}`,`β併用：${session.useBeta?"ON":"OFF"}`,`推奨投資額：${yen(s.recInvest)}`];
- if(m.carryIn>0)lines.push(`持込メダル：${m.carryMode==="exact"?"":"約"}${Math.round(m.carryIn)}枚`,`前台までの現金投資：${yen(m.priorCashInvest||0)}`);
- lines.push("","【実戦】");
- if(!session.events.length)lines.push("記録なし");else session.events.forEach(e=>{let d=eventDecision(e),gc=e.counters?.grape??0;lines.push(`${String(e.gap).padStart(3," ")}G ${(e.type==="HAMA"?"ハマり":e.type).padEnd(4," ")}  ${d.model}P4+ ${pct(d.p4).padStart(5," ")}  ${d.rank}  🍇${gc}${e.grapeRate?` 1/${e.grapeRate.toFixed(2)}`:""}`)});
- lines.push("",session.useBeta?"【実数収支】":"【推定収支】",`換金換算：1枚18.3円`,`現金投資：${yen(m.cashInvest)}`,`${session.useBeta?"持ちメダル":"推定持ちメダル"}：${Math.round(m.med)}枚`,`${session.useBeta?"回収額":"推定回収額"}：${yen(m.ret)}`,`${session.useBeta?"台単体収支":"台単体推定収支"}：${m.profit>=0?"+":""}${yen(m.profit)}`,`累計現金投資：${yen(m.totalCashInvest)}`,`${session.useBeta?"前台含む収支":"前台含む推定収支"}：${m.overallProfit>=0?"+":""}${yen(m.overallProfit)}`);
- if(session.moveMedals!=null){
-   let mv=session.moveMedals,mvRet=mv*EXCHANGE_YEN,tableMoveProfit=mvRet-m.cashInvest-m.carryIn*EXCHANGE_YEN,chainMoveProfit=mvRet-m.totalCashInvest;
-   lines.push(`移動メダル：${session.moveMode==="exact"?"推定":"約"}${Math.round(mv)}枚`,`移動時推定回収額：${yen(mvRet)}`,`移動時台単体推定収支：${tableMoveProfit>=0?"+":""}${yen(tableMoveProfit)}`,`移動時累計推定収支：${chainMoveProfit>=0?"+":""}${yen(chainMoveProfit)}`)
- }
- lines.push("","【終了】",`終了データ：${c.g}G BB${c.bb} REG${c.reg}`,`最終P4+：${pct(p)}`,`最終ランク：${r.label}`,`小役：🍇${cc.grape} / 🔁${cc.replay} / 🍒${cc.cherry}`,`ぶどう確率：${gr?`1/${gr.toFixed(2)}`:"—"}`);if(session.useBeta){let b=betaPosterior(session.machine,c.g,c.bb,c.reg,pg,cc.grape),br=rankInfo(b.p4plus);lines.push(`最終βP4+：${pct(b.p4plus)}`,`最終βランク：${br.label}`)}
- let ai=$("actualInvest").value.trim(),ar=$("actualReturn").value.trim(),currentActualInvest=ai?+ai:m.cashInvest;
- if(ai)lines.push(`実投資：${yen(+ai)}`);
- if(ar){
-   let finalReturn=+ar,totalActualInvest=(m.priorCashInvest||0)+currentActualInvest,tableActualProfit=finalReturn-currentActualInvest-m.carryIn*EXCHANGE_YEN,cumulativeProfit=finalReturn-totalActualInvest;
-   lines.push(`回収：${yen(finalReturn)}`,`台単体収支：${tableActualProfit>=0?"+":""}${yen(tableActualProfit)}`,`累計現金投資：${yen(totalActualInvest)}`,`累計収支：${cumulativeProfit>=0?"+":""}${yen(cumulativeProfit)}`)
- }
- lines.push(`終了理由：${$("endReason").value}`);
- if($("memo").value.trim())lines.push(`メモ：${$("memo").value.trim()}`);
- return lines.join("\n")
-}
-function updateLog(){$("logPreview").textContent=makeLog()}
-function finish(){session.endReason=$("endReason").value;session.memo=$("memo").value;session.actualInvest=$("actualInvest").value?+$("actualInvest").value:null;session.actualReturn=$("actualReturn").value?+$("actualReturn").value:null;session.playDate=$("playDate").value||null;session.startTime4=$("startTime4").value||null;session.endTime4=$("endTime4").value||null;updateLog();saveTemp()}
-function copyLog(){navigator.clipboard?.writeText(makeLog());toast("実戦記録をコピーしました")}
-function saveTemp(){
- if(!session)return;
- session.endReason=$("endReason")?.value||session.endReason||"任意終了";
- session.memo=$("memo")?.value??session.memo??"";
- session.playDate=$("playDate")?.value||null;
- session.startTime4=$("startTime4")?.value||null;
- session.endTime4=$("endTime4")?.value||null;
- session.actualInvest=$("actualInvest")?.value?+$("actualInvest").value:null;
- session.actualReturn=$("actualReturn")?.value?+$("actualReturn").value:null;
- session.useBeta=!!$("useBeta")?.checked;session.counters=session.counters||{grape:0,replay:0,cherry:0};
- try{localStorage.setItem("alpha_current_session",JSON.stringify(session));localStorage.setItem("alpha_selected_event",selectedEvent)}catch(e){console.warn("一時保存に失敗",e)}
-}
-function restoreTemp(){
- let x=safeJSON("alpha_current_session",null);
- if(!x)return;
- try{
-   session=x;
-   session.events=Array.isArray(session.events)?session.events:[];session.counters=session.counters||{grape:0,replay:0,cherry:0};session.useBeta=!!session.useBeta;
-   session.finance=session.finance||{cashInvest:0,carryIn:0,adjust:0,carryMode:null,priorProfit:0,priorCashInvest:0};
-   if(session.finance.priorProfit==null)session.finance.priorProfit=0;
-   if(session.finance.priorCashInvest==null)session.finance.priorCashInvest=0;
-   $("machine").value=session.machine||"my5";
-   $("startG").value=session.start?.g||"";
-   $("startBB").value=session.start?.bb??"";
-   $("startREG").value=session.start?.reg??"";
-   $("userCap").value=session.start?.userCap||"";
-   $("endReason").value=session.endReason||"任意終了";
-   $("memo").value=session.memo||"";
-   $("playDate").value=session.playDate||"";
-   $("startTime4").value=session.startTime4||"";
-   $("endTime4").value=session.endTime4||"";
-   $("actualInvest").value=session.actualInvest??session.finance.cashInvest??"";
-   $("actualReturn").value=session.actualReturn??"";$("useBeta").checked=!!session.useBeta;
-   document.querySelectorAll(".eventBtn").forEach(b=>b.classList.toggle("active",b.dataset.event===selectedEvent));
-   showSession();
- }catch(e){
-   console.error("一時データ復元に失敗",e);
-   localStorage.removeItem("alpha_current_session");
-   session=null;
-   toast("一時データの復元に失敗したため初期化しました")
- }
-}
-function resetSession(){session=null;localStorage.removeItem("alpha_current_session");$("useBeta").checked=false;selectedEvent="BB";localStorage.setItem("alpha_selected_event","BB");document.querySelectorAll(".eventBtn").forEach(b=>b.classList.toggle("active",b.dataset.event==="BB"));$("initialResultBody").classList.remove("collapsedBody");$("toggleInitialBtn").textContent="折りたたむ";$("endCardBody").classList.add("collapsedBody");$("toggleEndBtn").textContent="開く";["initialResult","playCard","balanceCard","historyCard","endCard"].forEach(x=>$(x).classList.add("hidden"));["compact","startG","startBB","startREG","userCap","eventG","actualInvest","actualReturn","playDate","startTime4","endTime4","memo"].forEach(x=>$(x).value="");window.scrollTo({top:0,behavior:"smooth"})}
-function saveHistory(){
- if(!session)return;
- let h=JSON.parse(localStorage.getItem("alpha_history")||"[]"),log=makeLog(),m=moneyState(),actualReturn=$("actualReturn").value.trim();
- let chainProfit;
- if(actualReturn){
-   let currentActualInvest=$("actualInvest").value.trim()?+$("actualInvest").value:m.cashInvest;
-   chainProfit=+$("actualReturn").value-((m.priorCashInvest||0)+currentActualInvest)
- }else if(session.moveMedals!=null){
-   chainProfit=session.moveMedals*EXCHANGE_YEN-m.totalCashInvest
- }else chainProfit=m.overallProfit;
- h.unshift({at:sessionTimestamp("end"),startedAt:sessionTimestamp("start"),log,points:graphPointsFromSession(session),chainId:session.chainId||newChainId(),chainProfit});
- localStorage.setItem("alpha_history",JSON.stringify(h.slice(0,200)));renderSaved();toast("履歴に保存しました")
-}
-let editingHistoryIndex=null;
-function parseLogSummary(log){
- const machine=(log.match(/^機種：(.+)$/m)||[])[1]||"実戦記録";
- const sp=(log.match(/^開始P4\+：\s*([0-9.]+)%/m)||[])[1], sr=(log.match(/^開始ランク：\s*(.+)$/m)||[])[1];
- const fp=(log.match(/^最終P4\+：\s*([0-9.]+)%/m)||[])[1], fr=(log.match(/^最終ランク：\s*(.+)$/m)||[])[1];
- const ai=(log.match(/^実投資：\s*([\d,]+)円/m)||log.match(/^現金投資：\s*([\d,]+)円/m)||[])[1];
- const ar=(log.match(/^回収：\s*([\d,]+)円/m)||log.match(/^回収額：\s*([\d,]+)円/m)||log.match(/^移動時推定回収額：\s*([\d,]+)円/m)||log.match(/^推定回収額：\s*([\d,]+)円/m)||[])[1];
- const move=(log.match(/^移動メダル：(.+)$/m)||[])[1]||null;
- const pr=parseTableProfit(log);
- const cumulative=parseProfit(log);
- return {machine,sp,sr,fp,fr,ai,ar,move,pr,cumulative}
-}
-function deleteSavedHistory(i){
- let h=JSON.parse(localStorage.getItem("alpha_history")||"[]");if(!h[i])return;
- if(!confirm("この保存履歴を削除しますか？"))return;
- h.splice(i,1);localStorage.setItem("alpha_history",JSON.stringify(h));renderSaved();toast("履歴を削除しました")
-}
-function renderSaved(){
- let h=JSON.parse(localStorage.getItem("alpha_history")||"[]"),el=$("savedHistory");
- el.innerHTML=h.length?h.map((x,i)=>{
-   let s=parseLogSummary(x.log),money=s.pr===null?"台収支 —":`台収支 <span class="${s.pr>=0?"good":"bad"}">${s.pr>=0?"+":""}${s.pr.toLocaleString("ja-JP")}円</span>`;
-   let cum=s.cumulative===null?"":` / 累計 <span class="${s.cumulative>=0?"good":"bad"}">${s.cumulative>=0?"+":""}${s.cumulative.toLocaleString("ja-JP")}円</span>`;
-   let estRet=(x.log.match(/^移動時推定回収額：\s*([\d,]+)円/m)||[])[1];
-   let moveCum=parseSignedYenLine(x.log,"移動時累計推定収支");
-   let movement=s.move
-    ?`<div class="savedMoney">投資 ${s.ai?Number(s.ai.replace(/,/g,"")).toLocaleString("ja-JP")+"円":"0円"} / 移動 ${s.move} / 推定回収 ${estRet?Number(estRet.replace(/,/g,"")).toLocaleString("ja-JP")+"円":"—"} / 推定累計 <span class="${moveCum!=null&&moveCum>=0?"good":"bad"}">${moveCum==null?"—":`${moveCum>=0?"+":""}${moveCum.toLocaleString("ja-JP")}円`}</span></div>`
-    :`<div class="savedMoney">投資 ${s.ai?Number(s.ai.replace(/,/g,"")).toLocaleString("ja-JP")+"円":"—"} / 回収 ${s.ar?Number(s.ar.replace(/,/g,"")).toLocaleString("ja-JP")+"円":"—"} / ${money}${cum}</div>`;
-   return `<div class="savedItem"><div class="savedMain">
-    <div class="savedTitle">${formatDateTimeNoSec(x.at)}　${s.machine}</div>
-    <div class="savedRank">${s.sr||"—"} ${s.sp?`${s.sp}%`:""} → ${s.fr||"—"} ${s.fp?`${s.fp}%`:""}</div>
-    ${movement}
-    <div class="savedActions">
-      <button class="tiny" onclick="copySavedHistory(${i})">コピー</button>
-      <button class="tiny" onclick="editSavedHistory(${i})">編集</button>
-      <button class="tiny" onclick="showSavedGraph(${i})">グラフ</button>
-      <button class="tiny" onclick="alert(historyData[${i}].log)">詳細</button>
-      <button class="tiny" onclick="deleteSavedHistory(${i})">削除</button>
-    </div>
-   </div></div>`
- }).join(""):'<div class="note">保存済み履歴はありません。</div>';
- window.historyData=h
-}
-function copySavedHistory(i){let h=JSON.parse(localStorage.getItem("alpha_history")||"[]");if(h[i])copyText(h[i].log,"この履歴をコピーしました")}
-function editSavedHistory(i){
-  let h=JSON.parse(localStorage.getItem("alpha_history")||"[]");
-  if(!h[i])return;
-  editingHistoryIndex=i;
-  $("historyEditArea").value=h[i].log||"";
-  $("editHistoryModal").classList.remove("hidden");
-}
-function saveEditedHistory(){
-  let h=JSON.parse(localStorage.getItem("alpha_history")||"[]");
-  if(editingHistoryIndex===null||!h[editingHistoryIndex])return;
-  h[editingHistoryIndex].log=$("historyEditArea").value;
-  h[editingHistoryIndex].editedAt=Date.now();h[editingHistoryIndex].points=graphPointsFromLog(h[editingHistoryIndex].log);let ep=parseProfit(h[editingHistoryIndex].log);if(ep!==null)h[editingHistoryIndex].chainProfit=ep;
-  localStorage.setItem("alpha_history",JSON.stringify(h));
-  $("editHistoryModal").classList.add("hidden");
-  editingHistoryIndex=null;
-  renderSaved();
-  toast("履歴を修正しました")
-}
-["startTime4","endTime4"].forEach(id=>$(id).addEventListener("input",()=>{$(id).value=$(id).value.replace(/\D/g,"").slice(0,4);updateLog();saveTemp()}));
-$("playDate").addEventListener("input",()=>{updateLog();saveTemp()});
-$("compact").addEventListener("input",()=>{let v=$("compact").value.replace(/\D/g,"").slice(0,8);$("compact").value=v;if(v.length===8){$("startG").value=+v.slice(0,4);$("startBB").value=+v.slice(4,6);$("startREG").value=+v.slice(6)}})
-$("judgeBtn").onclick=begin;$("recordBtn").onclick=addEvent;$("undoBtn").onclick=undo;$("invest1000Btn").onclick=()=>changeInvest(1000);$("investMinus1000Btn").onclick=()=>changeInvest(-1000);$("setMedalsBtn").onclick=()=>correctMedals($("actualMedals").value);$("zeroMedalsBtn").onclick=()=>correctMedals(0);
-$("carryExactBtn").onclick=()=>carry("exact");$("carryApproxBtn").onclick=()=>carry("approx");$("carryAutoBtn").onclick=()=>carry("auto");$("cancelCarryBtn").onclick=()=>{pendingCarry=null;localStorage.removeItem("alpha_pending_carry");renderPending()};
-$("finishBtn").onclick=finish;$("copyBtn").onclick=copyLog;$("saveHistoryBtn").onclick=saveHistory;$("newBtn").onclick=resetSession;$("clearHistoryBtn").onclick=()=>{if(confirm("保存済み履歴を全削除しますか？")){localStorage.removeItem("alpha_history");renderSaved()}};
-["endReason","actualReturn","memo"].forEach(id=>$(id).addEventListener("input",()=>{updateLog();saveTemp()}));
-$("actualInvest").addEventListener("input",()=>{$("actualInvest").dataset.manual="1";updateLog();saveTemp()});
-document.querySelectorAll("[data-counter]").forEach(btn=>btn.onclick=()=>changeCounter(btn.dataset.counter,+btn.dataset.delta));
-$("useBeta").addEventListener("change",()=>{if(!session)return;session.useBeta=$("useBeta").checked;renderBalance();renderCurrent();renderHistory();updateCurrentGraph();updateLog();saveTemp();toast(session.useBeta?"βモデル＋実数追跡をON":"αモデル＋推定追跡に戻しました")});
-document.querySelectorAll(".eventBtn").forEach(btn=>btn.onclick=()=>{
- selectedEvent=btn.dataset.event;
- localStorage.setItem("alpha_selected_event",selectedEvent);
- document.querySelectorAll(".eventBtn").forEach(b=>b.classList.toggle("active",b===btn));
- $("eventG").focus();
-});
-$("toggleEndBtn").onclick=()=>toggleEnd();
-$("toggleInitialBtn").onclick=()=>toggleInitial();
-$("exportHistoryBtn").onclick=exportAllHistory;
-$("openCalendarBtn").onclick=()=>{calendarDate=new Date();renderCalendar();$("calendarModal").classList.remove("hidden")};
-$("closeCalendarBtn").onclick=()=>$("calendarModal").classList.add("hidden");
-$("prevMonthBtn").onclick=()=>{calendarDate=new Date(calendarDate.getFullYear(),calendarDate.getMonth()-1,1);renderCalendar()};
-$("nextMonthBtn").onclick=()=>{calendarDate=new Date(calendarDate.getFullYear(),calendarDate.getMonth()+1,1);renderCalendar()};
-$("calendarModal").onclick=e=>{if(e.target===$("calendarModal"))$("calendarModal").classList.add("hidden")};
-$("closeDayDetailBtn").onclick=()=>$("dayDetailModal").classList.add("hidden");
-$("dayDetailModal").onclick=e=>{if(e.target===$("dayDetailModal"))$("dayDetailModal").classList.add("hidden")};
-$("closeHistoryGraphBtn").onclick=()=>$("historyGraphModal").classList.add("hidden");
-$("historyGraphModal").onclick=e=>{if(e.target===$("historyGraphModal"))$("historyGraphModal").classList.add("hidden")};
-$("openRulesBtn").onclick=()=>$("rulesModal").classList.remove("hidden");
-$("closeRulesBtn").onclick=()=>$("rulesModal").classList.add("hidden");
-$("rulesModal").onclick=e=>{if(e.target===$("rulesModal"))$("rulesModal").classList.add("hidden")};
-$("closeEditHistoryBtn").onclick=()=>{$("editHistoryModal").classList.add("hidden");editingHistoryIndex=null};
-$("editHistoryModal").onclick=e=>{if(e.target===$("editHistoryModal")){$("editHistoryModal").classList.add("hidden");editingHistoryIndex=null}};
-$("saveEditedHistoryBtn").onclick=saveEditedHistory;
-renderPending();renderSaved();restoreTemp();
+const guessCard=playMode==='practice'?'':isFixedQuestion()?`<div class="card"><div class="section-title">固定設定モード</div><div class="note">出題設定を固定しているため、設定回答欄は表示しません。</div><div class="row">${playMode==='progress'?`<button class="primary" onclick="saveProgressGuess()">${snap.target<current.target?'次の1000Gへ':'最終結果を見る'}</button>`:`<button class="primary" onclick="reveal()">結果を見る</button><button class="secondary" onclick="newQuestion()">次の問題</button>`}</div><div class="reveal" id="reveal"></div></div>`:`<div class="card"><div class="section-title">${playMode==='progress'?`${snap.target}G時点の設定予想`:'あなたの設定予想'}</div><div class="guess">${[1,2,3,4,5,6].map(n=>`<button data-n="${n}" onclick="chooseGuess(${n})">設定${n}</button>`).join('')}</div><div class="row">${playMode==='progress'?`<button class="primary" onclick="saveProgressGuess()">${snap.target<current.target?'予想を記録して次へ':'最終予想を記録して答え合わせ'}</button>`:`<button class="primary" onclick="reveal()">答え合わせ</button><button class="secondary" onclick="newQuestion()">次の問題</button>`}</div><div class="reveal" id="reveal"></div></div>`;
+const postExitNext=playMode==='practice'&&practice.state==='afterExit'?`<div class="card" style="padding:12px 14px"><div class="note" style="margin-bottom:9px">${practice.exitG}Gで撤退済み。設定予想なしで、500G先・次のボーナス当選・最終Gまで進めて答え合わせできます。</div><div class="row"><button class="primary" onclick="practiceNextResult()">次の500Gへ</button><button class="secondary" onclick="practiceNextHitResult()">次の当たりまで</button><button class="secondary" onclick="practiceToEndResult()">最終Gまで</button></div></div>`:'';
+document.getElementById('gameArea').innerHTML=`${progressBlock}${practiceTop}
+<div class="card scrollAnchor" id="topStatsCard"><div class="hero"><div class="stat"><div class="k">機種</div><div class="v" style="font-size:14px">${specs[current.machine].name}</div></div><div class="stat"><div class="k">表示G</div><div class="v">${snap.target}</div></div><div class="stat"><div class="k">BB / REG</div><div class="v">${snap.bb} / ${snap.reg}</div><div class="rateLine">BB ${snap.bb?`1/${(snap.target/snap.bb).toFixed(1)}`:'—'}　REG ${snap.reg?`1/${(snap.target/snap.reg).toFixed(1)}`:'—'}</div></div><div class="stat"><div class="k">合算</div><div class="v">${total?'1/'+comb.toFixed(1):'—'}</div></div></div><div class="roleStrip"><div class="roleStat"><div class="k">🍇 ぶどう（${roleScope}）</div><b>${visibleRoles.grape}回</b><div class="rateLine">${grapeRate?`1/${grapeRate.toFixed(2)}`:'—'}</div></div><div class="roleStat"><div class="k">🔁 リプレイ（${roleScope}）</div><b>${visibleRoles.replay}回</b><div class="rateLine">${visibleRoles.replay?`1/${(visibleRoles.games/visibleRoles.replay).toFixed(2)}`:'—'}</div></div><div class="roleStat"><div class="k">🍒 チェリー（${roleScope}）</div><b>${visibleRoles.cherry}回</b><div class="rateLine">${visibleRoles.cherry?`1/${(visibleRoles.games/visibleRoles.cherry).toFixed(2)}`:'—'}</div></div></div></div>
+${postExitNext}<div class="card"><div class="section-title">推移グラフ <span style="font-size:12px;color:var(--muted)">小役反映差枚 ${snap.diff>=0?'+':''}${snap.diff}枚</span></div><div class="graph">${graphSVG(snap.pts,snap.target)}</div></div><div class="card"><div class="section-title">特賞履歴 <span style="font-size:12px;color:var(--muted)">ツブ表示・直近20回 / 左が新しい</span></div><div class="grainWrap"><div class="grainChart" style="width:${Math.max(1,displayItems.length)*58}px"><div class="chainLane" style="top:${chainTop}px">${chainBands}</div>${grainCols}</div></div><div class="note" style="margin-top:8px">ツブは100Gごとに1個。1〜3個目は青、4〜5個目は黄、6個目以降は緑。左端の「終了」は当たりまで届かなかった最終G数で、最上段のみ赤表示。ジャグ連は100G以内で帯表示。</div></div>
+<div class="card alpha ${document.getElementById('alphaToggle').checked?'show':''}" id="alphaBox"><div class="modelCompare"><div class="modelPanel"><div class="modelName">αモデル（G・BB・REG）</div><div class="modelRank">${rankOf(a.p4)}</div><div class="modelP4">P4+ ${a.p4.toFixed(1)}%</div></div><div class="modelPanel beta"><div class="modelName">βモデル（α＋ぶどう）</div><div class="modelRank">${rankOf(beta.p4)}</div><div class="modelP4">P4+ ${beta.p4.toFixed(1)}%</div><div class="rateLine">${visibleRoles.games}G / 🍇${visibleRoles.grape}${grapeRate?`（1/${grapeRate.toFixed(2)}）`:''}</div></div></div><div class="bar"><div style="width:${Math.min(100,a.p4)}%"></div></div><div class="probs">${probs}</div>${playMode==='practice'?rankGuideHTML(current.machine,snap.target,snap.bb,snap.reg):''}</div>${practiceAction}${guessCard}`}
+document.getElementById('alphaToggle').addEventListener('change',()=>{const b=document.getElementById('alphaBox');if(b)b.classList.toggle('show',document.getElementById('alphaToggle').checked)});
+initShopDistribution();
 </script>
-</body></html>
+</body>
+</html>
