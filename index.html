@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="app-build" content="2026-08-23-mobile-compact-v1">
 <title>ジャグラー設定看破ゲーム α</title>
 <style>
 :root{--bg:#0d1016;--card:#171c25;--card2:#11161e;--line:#2a3342;--text:#f5f7fb;--muted:#94a0b2;--blue:#4f8cff;--red:#ff4b3e;--green:#54e38e;--yellow:#fff36a;--orange:#f59a36;--cyan:#50b8d8}
@@ -10,6 +11,75 @@
 .grainWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}.grainChart{display:flex;gap:4px;align-items:flex-end;min-width:max-content;padding:46px 4px 0;position:relative}.grainCol{width:54px;flex:0 0 54px;text-align:center;position:relative}.grainStack{height:228px;display:flex;flex-direction:column-reverse;justify-content:flex-start;gap:2px;align-items:stretch}.grainBlock{height:18px;border-radius:2px}.grainBlue{background:#4266e8}.grainYellow{background:#fff36a}.grainGreen{background:#69ef45}.grainRed{background:#ff4f4f}.grainMeta{margin-top:5px;font-size:11px;line-height:1.2;color:var(--muted)}.grainType{font-size:11px;font-weight:900;margin-top:3px;padding:4px 2px;border-radius:4px}.grainType.bb{background:var(--red);color:white}.grainType.reg{background:#456cf0;color:white}.grainType.end{background:#9b3b44;color:white}.chainLane{position:absolute;left:4px;right:4px;height:22px;pointer-events:none}.chainBand{position:absolute;height:18px;border-radius:5px;background:rgba(80,184,216,.76);color:white;font-size:11px;font-weight:900;line-height:18px;text-align:center;white-space:nowrap;overflow:hidden}
 .practiceStatus{border:1px solid #334055;background:#111824;border-radius:14px;padding:13px}.practiceStatus .big{font-size:22px;font-weight:950;margin-top:3px}.practiceBonusBadge{margin-top:12px;border-radius:12px;padding:16px 14px;text-align:center;color:#fff;font-size:30px;font-weight:950;letter-spacing:.03em;box-shadow:0 6px 18px rgba(0,0,0,.24)}.practiceBonusBadge.bb{background:var(--red)}.practiceBonusBadge.reg{background:#456cf0}.practiceBonusBadge .bonusType{font-size:34px;font-weight:950}.practiceBonusBadge .bonusGap{font-size:30px;font-weight:950;margin-left:8px}.practiceBonusBadge small{display:block;font-size:14px;font-weight:850;opacity:.9;margin-top:4px;letter-spacing:0}.rankGuide{margin-top:14px;border:1px solid #315079;background:#0f1a27;border-radius:14px;padding:13px}.rankGuideTitle{font-size:14px;font-weight:900;color:#9ec7ff;margin-bottom:9px}.rankGuideGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rankGuideBox{background:#0d141d;border:1px solid #29415f;border-radius:11px;padding:10px}.rankGuideBox.full{grid-column:1/-1}.rankGuideLabel{font-size:11px;color:var(--muted);margin-bottom:4px}.rankGuideValue{font-size:19px;font-weight:950;line-height:1.25}.rankGuideNote{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.55}.money{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.money>div{background:#0f141c;border:1px solid var(--line);border-radius:12px;padding:10px}.money .mv{font-size:19px;font-weight:900;margin-top:3px}.decisionTag{display:inline-block;padding:5px 9px;border-radius:999px;background:#252d39;color:#dce5f1;font-size:11px;font-weight:800}.finalEval{background:#101923;border:1px solid #29415f;border-radius:14px;padding:14px;margin-top:12px}.evalTitle{font-weight:950;font-size:21px;margin-bottom:5px}.scrollAnchor{scroll-margin-top:12px}
 .storeConfig{margin-top:12px;background:#11161e;border:1px solid var(--line);border-radius:14px;padding:0 13px}.storeConfig summary{cursor:pointer;padding:13px 0;font-size:13px;font-weight:900;color:#dbe6f5}.storeGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-bottom:10px}@media(min-width:700px){.storeGrid{grid-template-columns:repeat(6,minmax(0,1fr))}}.storeTotal{font-size:12px;font-weight:900;padding:0 0 12px}.storeTotal.ok{color:var(--green)}.storeTotal.bad{color:#ff8e84}.roleStrip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.roleStat{background:#0f141c;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.roleStat b{display:block;font-size:17px;margin-top:3px}.modelCompare{display:grid;grid-template-columns:1fr 1fr;gap:10px}.modelPanel{background:#11161e;border:1px solid var(--line);border-radius:13px;padding:12px}.modelPanel.beta{border-color:#554c73;background:#171526}.modelPanel .modelName{font-size:11px;color:var(--muted);font-weight:900}.modelPanel .modelRank{font-size:28px;font-weight:950;margin-top:2px}.modelPanel .modelP4{font-size:20px;font-weight:900}.signalBox{border:1px solid #745f2c;background:#251f12;border-radius:13px;padding:12px;color:#ffe29a;margin-bottom:10px}
+@media(max-width:600px){
+  body{font-size:14px}
+  .wrap{padding:12px 10px 30px}
+  h1{font-size:20px;margin-top:2px}
+  .sub{font-size:11px;margin-bottom:12px}
+  .card{border-radius:15px;padding:12px;margin-bottom:10px}
+  .grid,.hero{gap:8px}
+  label{font-size:10px;margin-bottom:4px}
+  select,input{padding:10px;font-size:16px}
+  button{border-radius:12px;padding:11px 9px;font-size:13px;line-height:1.25}
+  .row{gap:8px;margin-top:10px}
+  .row button{min-width:118px}
+  .modeTabs{gap:6px;margin-top:9px}
+  .modeTabs button{padding:10px 4px;font-size:11px}
+  .modebar{padding:10px 11px;margin-top:10px}
+  .modebar b{font-size:12px}
+  .modebar small{font-size:9px;line-height:1.35}
+  .stat{border-radius:12px;padding:9px}
+  .k{font-size:9.5px}
+  .v{font-size:18px;margin-top:3px}
+  #topStatsCard .stat:first-child .v{font-size:12px!important}
+  .rateLine{font-size:9.5px}
+  .roleStrip{gap:6px;margin-top:8px}
+  .roleStat{padding:8px 5px;border-radius:10px}
+  .roleStat b{font-size:14px}
+  .section-title{font-size:15px;margin-bottom:8px}
+  .section-title span{font-size:10px!important}
+  .note{font-size:10.5px;line-height:1.55}
+  .practiceStatus{padding:10px;border-radius:12px}
+  .practiceStatus .big{font-size:18px}
+  .money{gap:6px;margin-top:8px}
+  .money>div{padding:8px;border-radius:10px}
+  .money .mv{font-size:16px}
+  .timeline{gap:6px}
+  .step{min-width:82px;padding:8px}
+  .step .g{font-size:10px}
+  .decisionTag{padding:4px 7px;font-size:9px}
+  .practiceBonusBadge{margin-top:9px;padding:12px 10px;font-size:24px}
+  .practiceBonusBadge .bonusType{font-size:27px}
+  .practiceBonusBadge .bonusGap{font-size:24px;margin-left:6px}
+  .practiceBonusBadge small{font-size:11px}
+  .modelCompare{gap:7px}
+  .modelPanel{padding:9px;border-radius:11px}
+  .modelPanel .modelName{font-size:9px}
+  .modelPanel .modelRank{font-size:23px}
+  .modelPanel .modelP4{font-size:16px}
+  .bar{height:9px;margin:8px 0}
+  .prob{height:47px}
+  .prob b{font-size:11px}
+  .prob small{font-size:8px}
+  .rankGuide{padding:10px;margin-top:10px;border-radius:12px}
+  .rankGuideTitle{font-size:12px;margin-bottom:7px}
+  .rankGuideGrid{gap:6px}
+  .rankGuideBox{padding:8px;border-radius:9px}
+  .rankGuideLabel{font-size:9px}
+  .rankGuideValue{font-size:15px}
+  .rankGuideNote{font-size:9.5px;margin-top:7px}
+  .graph{height:250px;border-radius:12px}
+  .guess{gap:6px;margin-top:8px}
+  .guess button{padding:10px 5px}
+  .reveal,.finalEval{padding:10px}
+  .evalTitle{font-size:17px}
+  .storeConfig{margin-top:9px;padding:0 10px;border-radius:12px}
+  .storeConfig summary{padding:10px 0;font-size:11px}
+  .storeTotal{font-size:10px;padding-bottom:9px}
+  .signalBox{padding:9px;margin-bottom:8px}
+  .grainChart{padding-top:38px}
+  .grainMeta,.grainType,.chainBand{font-size:9.5px}
+}
 </style>
 </head>
 <body>
