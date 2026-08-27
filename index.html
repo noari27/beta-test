@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="app-build" content="2026-08-27-compact-live-check-v2-auto-scroll">
+<meta name="app-build" content="2026-08-27-v10-model-auto-checks">
 <meta name="theme-color" content="#0f1115">
-<title>ジャグラーα判定システム</title>
+<title>ジャグラー α・β・γ判定システム</title>
 <style>
 :root{--bg:#0d1016;--card:#171b23;--card2:#10151d;--line:#2a313c;--text:#f4f7fb;--muted:#9aa4b2;--accent:#4f8cff;--good:#42c88a;--warn:#f2b84b;--bad:#ff6b6b}
 *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#090c11 0%,#111722 42%,#0d1016 100%);min-height:100vh}
@@ -42,6 +42,7 @@ button{border:0;border-radius:13px;padding:13px 15px;font-weight:800;font-size:1
 .eventBtn{background:#171d26;color:#aeb8c5;border:1px solid #303846;padding:12px 5px;border-radius:12px;font-weight:900}
 .eventBtn.active{background:#eaf2ff;color:#0d1218;border-color:#eaf2ff;box-shadow:0 0 0 2px rgba(234,242,255,.08)}
 .firstBonusCalc{margin-top:10px;padding:10px 11px;background:#101720;border:1px solid #36516f;border-radius:12px}.firstBonusCalc .checkRow label{font-size:13px}.firstBonusHint{margin-top:6px;color:#aed0ff;font-size:12px;line-height:1.5;font-weight:750}
+.machineModeToggle{display:flex;align-items:center;gap:7px;margin-top:7px}.machineModeToggle input{width:17px;height:17px;flex:0 0 auto;accent-color:#4f8cff}.machineModeToggle label{margin:0;font-size:11px;color:#b6c1cf;font-weight:800}.machineQuickButtons{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-top:7px}.machineQuickBtn{min-width:0;padding:8px 3px;border-radius:9px;background:#171d26;color:#aeb8c5;border:1px solid #303846;font-size:11px;white-space:nowrap}.machineQuickBtn.active{background:#eaf2ff;color:#0d1218;border-color:#eaf2ff;box-shadow:0 0 0 1px rgba(234,242,255,.08)}
 @media(max-width:480px){.eventInputRow{grid-template-columns:1fr}.eventButtons{grid-template-columns:repeat(3,1fr)}}
 .graphBox svg{width:100%;min-height:300px;height:auto;display:block}.graphLegend{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin-top:4px}
 .savedActions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.savedExcerpt{font-size:12px;color:var(--muted);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -53,7 +54,7 @@ button{border:0;border-radius:13px;padding:13px 15px;font-weight:800;font-size:1
 .promotionBox{margin-top:10px;background:#0f1a25;border:1px solid #31577c;border-radius:14px;padding:13px}
 .promotionTitle{font-size:13px;font-weight:900;color:#a9ceff;margin-bottom:8px}
 .promoGood{color:#42d69a;font-weight:800}.promoMuted{color:#9aa4b2}
-.eventBadge{display:inline-flex;align-items:center;justify-content:center;min-width:76px;padding:8px 10px;border-radius:11px;font-weight:950;font-size:16px;line-height:1}
+.eventBadge{display:inline-flex;align-items:center;justify-content:center;min-width:76px;padding:8px 10px;border-radius:11px;font-weight:950;font-size:16px;line-height:1;white-space:nowrap}
 .eventBadge.bb{background:#ff4e43;color:#fff;box-shadow:0 3px 12px rgba(255,78,67,.18)}
 .eventBadge.reg{background:#3c7df0;color:#fff;box-shadow:0 3px 12px rgba(60,125,240,.18)}
 .eventBadge.hama{background:#3a414c;color:#f1f4f8}
@@ -82,14 +83,17 @@ button{border:0;border-radius:13px;padding:13px 15px;font-weight:800;font-size:1
 .timeGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 @media(max-width:480px){.timeGrid{grid-template-columns:1fr 1fr}}
 
-/* βモデル + 小役カウンター追加 */
+/* β・γモデル + 小役カウンター */
 .modelSwitch{margin:0 0 12px;background:#101720;border:1px solid #33445a;border-radius:14px;padding:12px}.checkRow{display:flex;align-items:center;gap:10px}.checkRow input{width:22px;height:22px;accent-color:#4f8cff;flex:0 0 auto}.checkRow label{margin:0;color:var(--text);font-size:14px;font-weight:850}
-.counterPanel{margin:12px 0 0;background:#0d141d;border:1px solid #2d3a4b;border-radius:14px;padding:12px}.counterTitle{font-size:13px;font-weight:900;margin-bottom:9px}.counterGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.counterItem{background:#111922;border:1px solid #2b3745;border-radius:13px;padding:9px;text-align:center}.counterName{font-size:12px;color:var(--muted);font-weight:850}.counterValue{appearance:textfield;-moz-appearance:textfield;width:100%;font-size:26px;font-weight:950;line-height:1.15;text-align:center;margin:5px 0;padding:2px 3px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--text)}.counterValue:focus{border-color:#4f8cff;background:#0d141d}.counterValue::-webkit-outer-spin-button,.counterValue::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.counterBtns{display:grid;grid-template-columns:40px 1fr;gap:5px}.counterMinus{padding:10px 4px;background:#202833;color:#aeb8c5;border:1px solid #333e4d}.counterPlus{padding:10px 4px;background:#294e3e;color:#eafff5;border:1px solid #386f58;font-size:18px}.counterMeta{margin-top:9px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.miniStat{background:#101720;border:1px solid #2a3849;border-radius:11px;padding:9px}.miniStat .k{font-size:10px;color:var(--muted)}.miniStat .v{font-size:16px;font-weight:900;margin-top:3px}
+.modelModeTitle{font-size:12px;font-weight:900;color:#cfe1fa;margin-bottom:8px}.modelOptionGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.modelOption{display:flex;align-items:center;gap:8px;margin:0;padding:9px 10px;border-radius:10px;background:#171d26;color:#dce8f8;border:1px solid #303846;font-size:12px;font-weight:900;cursor:pointer}.modelOption input{width:20px;height:20px;margin:0;accent-color:#4f8cff;flex:0 0 auto}.modelOption:has(input:checked){background:#17283d;border-color:#4f8cff;color:#eaf2ff}
+.counterPanel{margin:12px 0 0;background:#0d141d;border:1px solid #2d3a4b;border-radius:14px;padding:12px}.counterTitle{font-size:13px;font-weight:900;margin-bottom:9px}.counterGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.counterItem{background:#111922;border:1px solid #2b3745;border-radius:13px;padding:9px;text-align:center}.counterName{font-size:12px;color:var(--muted);font-weight:850}.counterValue{appearance:textfield;-moz-appearance:textfield;width:100%;font-size:26px;font-weight:950;line-height:1.15;text-align:center;margin:5px 0;padding:2px 3px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--text)}.counterValue:focus{border-color:#4f8cff;background:#0d141d}.counterValue::-webkit-outer-spin-button,.counterValue::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.counterBtns{display:grid;grid-template-columns:40px 1fr;gap:5px}.counterMinus{padding:10px 4px;background:#202833;color:#aeb8c5;border:1px solid #333e4d}.counterPlus{padding:10px 4px;background:#294e3e;color:#eafff5;border:1px solid #386f58;font-size:18px}.counterMeta{margin-top:9px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.miniStat{background:#101720;border:1px solid #2a3849;border-radius:11px;padding:9px}.miniStat .k{font-size:10px;color:var(--muted)}.miniStat .v{font-size:16px;font-weight:900;margin-top:3px}.flagSummary{grid-column:1/-1}.flagSummary .v{font-size:13px;line-height:1.45}
 .liveCheck{margin-top:9px;padding:10px;background:#101720;border:1px solid #36516f;border-radius:12px}.liveCheckHead{display:flex;align-items:center;justify-content:space-between;gap:8px}.liveCheckTitle{font-size:12px;font-weight:900;color:#aed0ff}.liveCheckControls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;margin-top:8px}.liveCheckControls input{min-width:0}.liveCheckControls button{white-space:nowrap;padding-left:12px;padding-right:12px}.liveCheckSteps{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.liveCheckPlus{grid-column:1/-1;width:100%;min-height:48px;background:#294e3e;color:#eafff5;border:1px solid #386f58;font-size:20px}.liveCheckJump{min-height:44px;font-size:17px}.liveCheckJump.five{background:#4a3b20;color:#ffe2a1;border:1px solid #806633}.liveCheckJump.ten{background:#342d55;color:#ddd2ff;border:1px solid #5c5190}.liveCheckStatus{margin-top:8px;padding:8px 9px;border-radius:10px;background:#18283a;color:#cfe3ff;font-size:12px;font-weight:850}.liveCheckAlpha{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;margin-top:8px;padding:10px 11px;border-radius:11px;background:#0d141d;border:1px solid #4175ad}.liveCheckAlphaRank{min-width:58px;text-align:center;padding:8px 9px;border-radius:10px;background:#202735;font-size:25px;font-weight:950}.liveCheckAlphaLabel{font-size:11px;color:#aed0ff;font-weight:850}.liveCheckAlphaValue{font-size:24px;font-weight:950;line-height:1.15;margin-top:2px}.liveCheckEnd{padding:7px 9px;font-size:11px}.previewBadge{display:inline-block;margin-left:6px;padding:4px 7px;border-radius:999px;background:#284a70;color:#d6eaff;font-size:10px;font-weight:900}
 .liveCheckAlphaRank.S{color:#ffcf5a}.liveCheckAlphaRank.Aplus{color:#8fe7cf}.liveCheckAlphaRank.A{color:#75e0ab}.liveCheckAlphaRank.B{color:#88b6ff}.liveCheckAlphaRank.Cplus{color:#ffd166}.liveCheckAlphaRank.Cminus{color:#ffad66}.liveCheckAlphaRank.D{color:#ff8383}
 .betaBox{margin-top:10px;border:1px solid #554c73;background:#171526;border-radius:14px;padding:12px}.betaTitle{font-size:11px;color:#bdb2e8}.betaP4{font-size:25px;font-weight:950;color:#d5ccff}.betaHint{font-size:11px;color:#aaa1c9;margin-top:4px;line-height:1.45}
+.modelResultBox{margin-top:10px;border:1px solid #4d5279;background:#161728;border-radius:14px;padding:12px}.modelResultBox.gamma{border-color:#356a65;background:#10201f}.modelResultBox.betaGamma{border-color:#665282;background:#1b1628}.modelResultTitle{font-size:11px;color:#c6c9ec}.modelResultP4{font-size:25px;font-weight:950;color:#dde0ff}.modelResultBox.gamma .modelResultP4{color:#bff2e5}.modelResultBox.betaGamma .modelResultP4{color:#e2d1ff}.modelResultHint{font-size:11px;color:#aeb6c8;margin-top:4px;line-height:1.5}.gammaCaution{display:inline-block;margin-top:7px;padding:5px 8px;border-radius:999px;background:#2b2518;color:#ffd78a;border:1px solid #5c4b28;font-size:10px;font-weight:900}
+.autoModelStatus{margin-top:10px;border:1px solid #33445a;background:#101720;border-radius:13px;padding:10px 11px;font-size:11px;color:#aeb8c5;line-height:1.5}.autoModelStatus b{color:#dce8f8}.bonusFlagArea{min-width:0}.eventGWithFlags{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:stretch}.bonusFlagButtons{display:grid;grid-template-columns:46px 46px;gap:6px}.bonusFlagBtn{padding:8px 4px;min-height:46px;background:#171d26;color:#768292;border:1px solid #303846;font-size:20px;line-height:1}.bonusFlagBtn.active{background:#f3f7ff;color:#0d1218;border-color:#f3f7ff;box-shadow:0 0 0 2px rgba(79,140,255,.2)}.bonusFlagBtn.unknown.active{background:#ffe4a8;border-color:#ffe4a8;color:#33250d}.bonusFlagBtn:disabled{opacity:.28;cursor:default}.bonusFlagHint{font-size:10px;color:var(--muted);margin-top:5px;text-align:right}.bonusFlagHint strong{color:#dce8f8}
 .betaConfidence{display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:900;border:1px solid #3b4554}.betaConfidence.low{color:#aab4c0;background:#171c23}.betaConfidence.mid{color:#ffd78a;background:#2b2518;border-color:#5c4b28}.betaConfidence.high{color:#bff7dd;background:#173227;border-color:#2d6a50}.modeBadge{display:inline-block;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:900;margin-left:6px}.modeBadge.estimate{background:#26303d;color:#b9c5d4}.modeBadge.actual{background:#214c3a;color:#bff7dd}
-@media(max-width:480px){.counterGrid{grid-template-columns:repeat(3,1fr);gap:6px}.counterItem{padding:7px 5px}.counterName{font-size:10px}.counterValue{font-size:23px}.counterBtns{grid-template-columns:36px 1fr}.counterMinus,.counterPlus{min-height:52px}.counterPlus{font-size:27px;font-weight:950}.liveCheckControls{grid-template-columns:minmax(0,1fr) 92px}.liveCheckPlus{min-height:52px;font-size:23px}.liveCheckControls button{padding-left:8px;padding-right:8px}.decisionSummary{font-size:12px;padding:9px}.stats .stat{padding:10px}}
+@media(max-width:480px){.modelOption{font-size:11px;padding:8px 7px}.modelOption input{width:18px;height:18px}.counterGrid{grid-template-columns:repeat(3,1fr);gap:6px}.counterItem{padding:7px 5px}.counterName{font-size:10px}.counterValue{font-size:23px}.counterBtns{grid-template-columns:36px 1fr}.counterMinus,.counterPlus{min-height:52px}.counterPlus{font-size:27px;font-weight:950}.liveCheckControls{grid-template-columns:minmax(0,1fr) 92px}.liveCheckPlus{min-height:52px;font-size:23px}.liveCheckControls button{padding-left:8px;padding-right:8px}.decisionSummary{font-size:12px;padding:9px}.stats .stat{padding:10px}.eventGWithFlags{grid-template-columns:minmax(0,1fr) auto}.bonusFlagButtons{grid-template-columns:44px 44px}.bonusFlagBtn{min-height:46px;padding:7px 2px}}
 
 
 /* 保存履歴：情報量は維持したままコンパクト化 */
@@ -115,12 +119,14 @@ button{border:0;border-radius:13px;padding:13px 15px;font-weight:800;font-size:1
 </head>
 <body>
 <div class="wrap">
-<h1>ジャグラー α判定</h1>
-<div class="sub">着席前のP4+判定から、実戦中のBB・REG・ハマり、持ちメダル、台移動まで管理します。</div>
+<h1>ジャグラー α・β・γ判定</h1>
+<div class="sub">着席前のα判定から、実戦中はぶどう・チェリー情報を組み合わせて判定できます。</div>
 
 <div class="card"><div class="card-title"><h2>① 着席前判定</h2></div>
 <div class="grid2"><div><label>機種</label><select id="machine">
-<option value="my5">マイジャグラーV</option><option value="gogo3">ゴーゴージャグラー3</option><option value="imex">アイムジャグラーEX</option><option value="girls">ジャグラーガールズSS</option></select></div>
+<option value="my5">マイジャグラーV</option><option value="gogo3">ゴーゴージャグラー3</option><option value="imex">アイムジャグラーEX</option><option value="girls">ジャグラーガールズSS</option></select>
+<div class="machineModeToggle"><input type="checkbox" id="machineQuickMode"><label for="machineQuickMode">簡略表記に切替</label></div>
+<div class="machineQuickButtons hidden" id="machineQuickButtons"><button type="button" class="machineQuickBtn" data-machine="my5">マイジャグ</button><button type="button" class="machineQuickBtn" data-machine="gogo3">ゴージャグ</button><button type="button" class="machineQuickBtn" data-machine="imex">アイム</button><button type="button" class="machineQuickBtn" data-machine="girls">ガールズ</button></div></div>
 <div><label>8桁入力（GGGGBBRR）</label><input id="compact" inputmode="numeric" maxlength="8" placeholder="例：30560811"></div></div>
 <div class="grid3" style="margin-top:10px"><div><label>G数</label><input id="startG" type="number"></div><div><label>BB</label><input id="startBB" type="number"></div><div><label>REG</label><input id="startREG" type="number"></div></div>
 <div style="margin-top:10px"><label>任意の投資上限（円）</label><input id="userCap" type="number" step="1000"></div>
@@ -130,24 +136,24 @@ button{border:0;border-radius:13px;padding:13px 15px;font-weight:800;font-size:1
 <div class="card hidden" id="initialResult"><div class="card-title"><h2>開始判定</h2><button class="tiny collapseBtn" id="toggleInitialBtn">折りたたむ</button></div><div id="initialResultBody"></div></div>
 
 <div class="card hidden" id="playCard"><div class="card-title"><h2>② 実戦入力</h2></div>
-<div class="modelSwitch"><div class="checkRow"><input type="checkbox" id="useBeta"><label for="useBeta">βモデル（ぶどう込みP4+）を併用する</label></div><div class="note" style="margin-top:7px">α＝G・BB・REGのみ。β＝α＋実戦開始後のぶどう。β判定はBB / REG / ハマり更新時に表示し、機種×実戦G数で信頼度を自動判定します。履歴は「高」到達後だけβへ自動切替します。</div></div>
+<div class="modelSwitch"><div class="modelModeTitle">追加する判定モデル（標準はα）</div><div class="modelOptionGrid"><label class="modelOption" for="useBetaModel"><input type="checkbox" id="useBetaModel">βモデルを使用する</label><label class="modelOption" for="useGammaModel"><input type="checkbox" id="useGammaModel">γモデルを使用する</label></div><div class="note" style="margin-top:7px">α判定は常に残ります。チェックしたモデルがαより信頼できるG数に達すると、自動で表示判定を切り替えます。両方チェック時はβ＋γを優先します。</div></div>
 <div class="eventInputRow">
 <div><label>イベント</label><div class="eventButtons">
 <button type="button" class="eventBtn active" data-event="BB">BB</button>
 <button type="button" class="eventBtn" data-event="REG">REG</button>
 <button type="button" class="eventBtn" data-event="HAMA">ハマり</button>
 </div></div>
-<div><label id="eventGLabel">G数</label><input id="eventG" type="number" min="1" inputmode="numeric" placeholder="例：150"></div>
+<div class="bonusFlagArea"><label id="eventGLabel">G数</label><div class="eventGWithFlags"><input id="eventG" type="number" min="1" inputmode="numeric" placeholder="例：150"><div class="bonusFlagButtons" id="bonusFlagButtons"><button type="button" class="bonusFlagBtn" data-bonus-flag="cherry" aria-label="チェリー重複">🍒</button><button type="button" class="bonusFlagBtn unknown" data-bonus-flag="unknown" aria-label="単独かチェリー重複か不明">？</button></div></div><div class="bonusFlagHint" id="bonusFlagHint"><strong>無点灯＝単独</strong>・再タップで解除</div></div>
 </div>
 <div class="firstBonusCalc" id="firstBonusCalc"><div class="checkRow"><input type="checkbox" id="firstBonusTotalMode" checked><label for="firstBonusTotalMode">初回ボーナスだけ台の総G数で入力する</label></div><div class="firstBonusHint" id="firstBonusHint">開始G数を自動で引き、当たりまでのG数に変換します。</div></div>
 <button class="primary big-action" id="recordBtn">記録して再判定</button><div id="currentResult" style="margin-top:12px"></div>
 <div class="counterPanel"><div class="counterTitle">小役カウンター</div><div class="counterGrid">
 <div class="counterItem"><div class="counterName">🍇 ぶどう</div><input class="counterValue" id="grapeCount" data-counter-input="grape" type="number" min="0" inputmode="numeric" value="0" aria-label="ぶどう回数"><div class="counterBtns"><button type="button" class="counterMinus" data-counter="grape" data-delta="-1">−</button><button type="button" class="counterPlus" data-counter="grape" data-delta="1">＋</button></div></div>
 <div class="counterItem"><div class="counterName">🔁 リプレイ</div><input class="counterValue" id="replayCount" data-counter-input="replay" type="number" min="0" inputmode="numeric" value="0" aria-label="リプレイ回数"><div class="counterBtns"><button type="button" class="counterMinus" data-counter="replay" data-delta="-1">−</button><button type="button" class="counterPlus" data-counter="replay" data-delta="1">＋</button></div></div>
-<div class="counterItem"><div class="counterName">🍒 チェリー</div><input class="counterValue" id="cherryCount" data-counter-input="cherry" type="number" min="0" inputmode="numeric" value="0" aria-label="チェリー回数"><div class="counterBtns"><button type="button" class="counterMinus" data-counter="cherry" data-delta="-1">−</button><button type="button" class="counterPlus" data-counter="cherry" data-delta="1">＋</button></div></div>
-</div><div class="counterMeta"><div class="miniStat"><div class="k">最新確定G数</div><div class="v" id="counterGames">0G</div></div><div class="miniStat"><div class="k">ぶどう確率</div><div class="v" id="grapeRate">—</div></div></div>
-<div class="liveCheck"><div class="liveCheckHead"><div class="liveCheckTitle">ハマり中の一時確認</div><button type="button" class="secondary liveCheckEnd hidden" id="liveCheckEndBtn">確認終了</button></div><div class="note" style="margin-top:4px">確定履歴や終了メモには追加せず、α・β判定と持ちメダル・収支だけを一時更新します。</div><div class="liveCheckControls"><input id="liveCheckG" type="number" min="0" inputmode="numeric" placeholder="ハマりG数"><button type="button" class="primary" id="liveCheckApplyBtn">現状確認</button></div><div class="liveCheckSteps hidden" id="liveCheckSteps"><button type="button" class="liveCheckPlus" id="liveCheckPlusBtn">＋1G</button><button type="button" class="liveCheckJump five" id="liveCheckPlus5Btn">＋5G</button><button type="button" class="liveCheckJump ten" id="liveCheckPlus10Btn">＋10G</button></div><div class="liveCheckStatus hidden" id="liveCheckStatus"></div><div class="liveCheckAlpha hidden" id="liveCheckAlpha"></div></div>
-<div class="note" style="margin-top:8px">小役数は直接入力できます。＋を通常入力、−を訂正用として使います。</div></div></div>
+<div class="counterItem"><div class="counterName">🍒 全チェリー</div><input class="counterValue" id="cherryCount" data-counter-input="cherry" type="number" min="0" inputmode="numeric" value="0" aria-label="全チェリー回数"><div class="counterBtns"><button type="button" class="counterMinus" data-counter="cherry" data-delta="-1">−</button><button type="button" class="counterPlus" data-counter="cherry" data-delta="1">＋</button></div></div>
+</div><div class="counterMeta"><div class="miniStat"><div class="k">最新確定G数</div><div class="v" id="counterGames">0G</div></div><div class="miniStat"><div class="k">ぶどう確率</div><div class="v" id="grapeRate">—</div></div><div class="miniStat flagSummary"><div class="k">実戦ボーナス内訳</div><div class="v" id="bonusFlagSummary">単独 0 / 🍒 0 / ？ 0</div></div></div>
+<div class="liveCheck"><div class="liveCheckHead"><div class="liveCheckTitle">ハマり中の一時確認</div><button type="button" class="secondary liveCheckEnd hidden" id="liveCheckEndBtn">確認終了</button></div><div class="note" style="margin-top:4px">確定履歴や終了メモには追加せず、その時点で信頼度が高いP4+と持ちメダル・収支だけを一時更新します。</div><div class="liveCheckControls"><input id="liveCheckG" type="number" min="0" inputmode="numeric" placeholder="ハマりG数"><button type="button" class="primary" id="liveCheckApplyBtn">現状確認</button></div><div class="liveCheckSteps hidden" id="liveCheckSteps"><button type="button" class="liveCheckPlus" id="liveCheckPlusBtn">＋1G</button><button type="button" class="liveCheckJump five" id="liveCheckPlus5Btn">＋5G</button><button type="button" class="liveCheckJump ten" id="liveCheckPlus10Btn">＋10G</button></div><div class="liveCheckStatus hidden" id="liveCheckStatus"></div><div class="liveCheckAlpha hidden" id="liveCheckAlpha"></div></div>
+<div class="note" style="margin-top:8px">BB・REG入力時は、🍒＝重複確定、？＝種別不明、無点灯＝単独です。？は記録上は不明のまま保存し、判定時のみ保守的にチェリー重複として扱います。🍒選択時は全チェリーにも自動で＋1するため、小役側の🍒は重ねて押さないでください。レアチェリーは通常のチェリー重複BBへ合算します。</div></div></div>
 
 <div class="card hidden" id="balanceCard"><div class="card-title"><h2 id="balanceTitle">持ちメダル・推定収支</h2></div><div class="balanceBox">
 <div class="balanceStats">
@@ -204,6 +210,7 @@ button{border:0;border-radius:13px;padding:13px 15px;font-weight:800;font-size:1
       <div class="rule"><b>B</b><label>推奨投資 円</label><input id="invB" type="number" value="10000"></div>
       <div class="rule"><b>C+</b><label>推奨投資 円</label><input id="invCp" type="number" value="3000"></div>
     </div>
+    <div class="note" style="margin-top:12px"><b>αから自動切替する実戦開始後G</b><br>β：マイ500G／ゴージャグ500G／アイム2000G／ガールズ1500G<br>γ単独：マイ600G（高2100G）。他3機種は6000Gまでα超え未確認<br>β＋γ：マイ300G（高1200G）／ゴージャグ300G（高800G）／アイム2200G／ガールズ1900G<br>中＝P4+のBrier誤差がαより1%以上改善、高＝3%以上改善。中到達時から表示判定を自動で切り替えます。</div>
   </div>
 </div>
 
@@ -252,15 +259,20 @@ button{border:0;border-radius:13px;padding:13px 15px;font-weight:800;font-size:1
 
 <script>
 const SPECS={
-my5:{name:"マイジャグラーV",bbPay:240,regPay:96,grapePay:8,cherryPay:2,settings:{1:[273.1,409.6],2:[270.8,385.5],3:[266.4,336.1],4:[254,290],5:[240.1,268.6],6:[229.1,229.1]},grape:{1:5.98,2:5.88,3:5.84,4:5.81,5:5.76,6:5.65}},
-gogo3:{name:"ゴーゴージャグラー3",bbPay:240,regPay:96,grapePay:8,cherryPay:2,settings:{1:[259,354.2],2:[258,332.7],3:[257,306.2],4:[254,268.6],5:[247.3,247.3],6:[234.9,234.9]},grape:{1:6.33,2:6.20,3:6.15,4:6.08,5:6.01,6:5.96}},
-imex:{name:"アイムジャグラーEX",bbPay:252,regPay:96,grapePay:8,cherryPay:2,settings:{1:[273.1,439.8],2:[269.7,399.6],3:[269.7,331],4:[259,315.1],5:[259,255],6:[255,255]},grape:{1:6.01,2:6.01,3:6.01,4:6.01,5:6.01,6:5.80}},
-girls:{name:"ジャグラーガールズSS",bbPay:240,regPay:96,grapePay:8,cherryPay:2,settings:{1:[273.1,381],2:[270.8,350.5],3:[260.1,316.6],4:[250.1,281.3],5:[243.6,270.8],6:[226,252.1]},grape:{1:5.98,2:5.98,3:5.98,4:5.98,5:5.88,6:5.83}}
+my5:{name:"マイジャグラーV",bbPay:240,regPay:96,grapePay:8,cherryPay:2,settings:{1:[273.1,409.6],2:[270.8,385.5],3:[266.4,336.1],4:[254,290],5:[240.1,268.6],6:[229.1,229.1]},grape:{1:5.91000,2:5.86977,3:5.83009,4:5.80016,5:5.75989,6:5.67019},gamma:{soloBB:{1:420.103,2:414.785,3:404.543,4:376.644,5:348.596,6:341.333},soloREG:{1:655.360,2:595.782,3:496.485,4:404.543,5:390.095,6:327.680},cherryBB:{1:1365.333,2:1365.333,3:1365.333,4:1365.333,5:1337.469,6:1129.931},rareBB:{1:1820.444,2:1820.444,3:1820.444,4:1820.444,5:1820.444,6:1820.444},cherryREG:{1:1092.267,2:1092.267,3:1040.254,4:1024.000,5:862.316,6:762.047},nonBonusCherry:{1:38.10,2:38.10,3:36.82,4:35.62,5:35.62,6:35.62},status:"独自解析値（暫定採用）"}},
+gogo3:{name:"ゴーゴージャグラー3",bbPay:240,regPay:96,grapePay:8,cherryPay:2,settings:{1:[259,354.2],2:[258,332.7],3:[257,306.2],4:[254,268.6],5:[247.3,247.3],6:[234.9,234.9]},grape:{1:6.24986,2:6.20019,3:6.15015,4:6.06983,5:5.99982,6:5.92014},gamma:{soloBB:{1:376.644,2:376.644,3:376.644,4:376.644,5:370.260,6:352.344},soloREG:{1:468.114,2:445.823,3:412.176,4:356.174,5:327.680,6:313.569},cherryBB:{1:1337.469,2:1337.469,3:1337.469,4:1337.469,5:1310.720,6:1260.308},rareBB:{1:2184.5,2:2114.1,3:2048.0,4:1872.5,5:1724.6,6:1598.4},cherryREG:{1:1456.356,2:1310.720,3:1191.564,4:1092.267,5:1008.246,6:936.229},cherryAll:{1:33.403,2:33.301,3:33.200,4:33.099,5:32.900,6:32.801},status:"予測値（暫定採用）"}},
+imex:{name:"アイムジャグラーEX",bbPay:252,regPay:96,grapePay:8,cherryPay:2,settings:{1:[273.1,439.8],2:[269.7,399.6],3:[269.7,331],4:[259,315.1],5:[259,255],6:[255,255]},grape:{1:6.02408,2:6.02408,3:6.02408,4:6.02408,5:6.02408,6:5.80016},gamma:{soloBB:{1:431.158,2:422.813,3:422.813,4:417.427,5:417.427,6:407.056},soloREG:{1:642.510,2:590.414,3:474.899,4:448.877,5:364.089,6:364.089},cherryBB:{1:1129.931,2:1129.931,3:1129.931,4:1092.267,5:1092.267,6:1092.267},rareBB:{1:2184.5,2:2184.5,3:2184.5,4:1820.4,5:1820.4,6:1820.4},cherryREG:{1:1394.383,2:1236.528,3:1092.267,4:1057.032,5:851.117,6:851.117},nonBonusCherry:{1:35.617,2:35.617,3:35.617,4:35.617,5:35.617,6:35.617},status:"独自解析値（暫定採用）"}},
+girls:{name:"ジャグラーガールズSS",bbPay:240,regPay:96,grapePay:8,cherryPay:2,settings:{1:[273.1,381],2:[270.8,350.5],3:[260.1,316.6],4:[250.1,281.3],5:[243.6,270.8],6:[226,252.1]},grape:{1:6.01,2:6.01,3:6.01,4:6.01,5:5.92,6:5.89},gamma:{soloBB:{1:387.8,2:381.0,3:370.3,4:350.5,5:337.8,6:312.1},soloREG:{1:520.1,2:481.9,3:436.9,4:397.2,5:383.3,6:358.1},cherryBB:{1:923.0,2:936.2,3:873.8,4:873.8,5:873.8,6:819.2},cherryREG:{1:1424.7,2:1285.0,3:1149.8,4:963.8,5:923.0,6:851.1},cherryAll:{1:33.61,2:33.51,3:33.30,4:33.20,5:33.10,6:32.90},status:"予測値（チェリー合算・暫定採用）"}}
 };
 const $=id=>document.getElementById(id), COIN_YEN=20, EXCHANGE_YEN=18.3, GAME_COIN_RATE=50/40;
-let session=null, selectedEvent=localStorage.getItem("alpha_selected_event")||"BB", pendingCarry=safeJSON("alpha_pending_carry",null), liveCheckG=0;
+let session=null, selectedEvent=localStorage.getItem("alpha_selected_event")||"BB", selectedBonusFlag=null, pendingCarry=safeJSON("alpha_pending_carry",null), liveCheckG=0;
 const pct=n=>n.toFixed(1)+"%", yen=n=>Math.round(n).toLocaleString("ja-JP")+"円";
 function safeJSON(key,fallback=null){try{let v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch(e){console.warn("storage parse failed",key,e);return fallback}}
+function syncMachineQuickButtons(){document.querySelectorAll(".machineQuickBtn").forEach(btn=>btn.classList.toggle("active",btn.dataset.machine===$("machine").value))}
+function setMachineQuickMode(enabled){
+ enabled=!!enabled;$("machineQuickMode").checked=enabled;$("machine").classList.toggle("hidden",enabled);$("machineQuickButtons").classList.toggle("hidden",!enabled);syncMachineQuickButtons();
+ try{localStorage.setItem("alpha_machine_quick_mode",enabled?"1":"0")}catch(e){}
+}
 
 function toast(s){let t=$("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1300)}
 function alphaLogs(m,g,bb,reg){let logs=[];for(let st=1;st<=6;st++){let [bd,rd]=SPECS[m].settings[st],pB=1/bd,pR=1/rd,pN=Math.max(1e-12,1-pB-pR),n=Math.max(0,g-bb-reg);logs.push(bb*Math.log(pB)+reg*Math.log(pR)+n*Math.log(pN))}return logs}
@@ -268,6 +280,52 @@ function normalizeLogs(logs){let mx=Math.max(...logs),w=logs.map(x=>Math.exp(x-m
 function posterior(m,g,bb,reg){return normalizeLogs(alphaLogs(m,g,bb,reg))}
 function logChoose(n,k){if(k<0||k>n)return -Infinity;k=Math.min(k,n-k);let x=0;for(let i=1;i<=k;i++)x+=Math.log(n-k+i)-Math.log(i);return x}
 function betaPosterior(m,g,bb,reg,playedG,grapes){let logs=alphaLogs(m,g,bb,reg),n=Math.max(0,Math.round(playedG)),k=Math.max(0,Math.min(n,Math.round(grapes)));if(n<=0)return normalizeLogs(logs);let lc=logChoose(n,k);logs=logs.map((x,i)=>{let den=SPECS[m].grape[i+1],pg=1/den;return x+lc+k*Math.log(pg)+(n-k)*Math.log(1-pg)});return normalizeLogs(logs)}
+function gammaRates(m,st){
+ let sp=SPECS[m],ga=sp.gamma,[bbDen,regDen]=sp.settings[st],pB=1/bbDen,pR=1/regDen,pCommonB=1/ga.cherryBB[st],pRareB=ga.rareBB?.[st]?1/ga.rareBB[st]:0,pCherryR=1/ga.cherryREG[st];
+ let pSoloB=ga.soloBB?.[st]?1/ga.soloBB[st]:Math.max(1e-12,pB-pCommonB-pRareB),pSoloR=ga.soloREG?.[st]?1/ga.soloREG[st]:Math.max(1e-12,pR-pCherryR);
+ let pNonBonusCherry=ga.nonBonusCherry?.[st]?1/ga.nonBonusCherry[st]:Math.max(1e-12,1/ga.cherryAll[st]-pCommonB-pRareB-pCherryR);
+ return{pB,pR,pNo:Math.max(1e-12,1-pB-pR),pSoloB,pCommonB,pRareB,pSoloR,pCherryR,pNonBonusCherry,pGrape:1/sp.grape[st]}
+}
+function gammaObserved(m,playedG,c,sessionBB,sessionREG){
+ let n=Math.max(0,Math.round(playedG)),sb=Math.max(0,Math.round(sessionBB||0)),sr=Math.max(0,Math.round(sessionREG||0));
+ let knownB=Math.max(0,Math.min(sb,Math.round(c?.cherryBB||0))),unknownB=Math.max(0,Math.min(sb-knownB,Math.round(c?.unknownBB||0)));
+ let knownR=Math.max(0,Math.min(sr,Math.round(c?.cherryREG||0))),unknownR=Math.max(0,Math.min(sr-knownR,Math.round(c?.unknownREG||0)));
+ let soloB=Math.max(0,sb-knownB-unknownB),soloR=Math.max(0,sr-knownR-unknownR),noBonusGames=Math.max(0,n-sb-sr);
+ let allCherry=Math.max(0,Math.round(c?.cherry||0)),nonBonusCherry=Math.max(0,Math.min(noBonusGames,allCherry-knownB-knownR));
+ return{n,sb,sr,knownB,knownR,unknownB,unknownR,soloB,soloR,noBonusGames,nonBonusCherry}
+}
+function gammaLogs(m,g,bb,reg,playedG,c,sessionBB,sessionREG,includeGrape=false){
+ let logs=alphaLogs(m,g,bb,reg),sp=SPECS[m],o=gammaObserved(m,playedG,c,sessionBB,sessionREG);
+ if(!sp.gamma||o.n<=0)return logs;
+ return logs.map((x,i)=>{
+  let st=i+1,r=gammaRates(m,st),bSum=Math.max(1e-12,r.pSoloB+r.pCommonB+r.pRareB),rSum=Math.max(1e-12,r.pSoloR+r.pCherryR),qSoloB=Math.max(1e-12,r.pSoloB/bSum),qAnyCherryB=Math.max(1e-12,(r.pCommonB+r.pRareB)/bSum),qSoloR=Math.max(1e-12,r.pSoloR/rSum),qCherryR=Math.max(1e-12,r.pCherryR/rSum);
+  x+=o.soloB*Math.log(qSoloB)+(o.knownB+o.unknownB)*Math.log(qAnyCherryB)+o.soloR*Math.log(qSoloR)+(o.knownR+o.unknownR)*Math.log(qCherryR);
+  let pCherry=Math.max(1e-12,Math.min(1-1e-12,r.pNonBonusCherry/r.pNo));
+  if(includeGrape){
+   let grapes=Math.max(0,Math.min(o.noBonusGames,Math.round(c?.grape||0))),cherries=Math.max(0,Math.min(o.noBonusGames-grapes,o.nonBonusCherry)),other=Math.max(0,o.noBonusGames-grapes-cherries),pGrape=Math.max(1e-12,Math.min(1-1e-12,r.pGrape/r.pNo)),pOther=Math.max(1e-12,1-pGrape-pCherry);
+   x+=grapes*Math.log(pGrape)+cherries*Math.log(pCherry)+other*Math.log(pOther)
+  }else x+=o.nonBonusCherry*Math.log(pCherry)+(o.noBonusGames-o.nonBonusCherry)*Math.log(1-pCherry);
+  return x
+ })
+}
+function gammaPosterior(m,g,bb,reg,playedG,c,sessionBB,sessionREG){return normalizeLogs(gammaLogs(m,g,bb,reg,playedG,c,sessionBB,sessionREG,false))}
+function betaGammaPosterior(m,g,bb,reg,playedG,c,sessionBB,sessionREG){return normalizeLogs(gammaLogs(m,g,bb,reg,playedG,c,sessionBB,sessionREG,true))}
+function modelOptions(source=session){return{beta:source?.useBetaModel===true,gamma:source?.useGammaModel===true}}
+function modeUsesBeta(source=session){return modelOptions(source).beta}
+function modeUsesGamma(source=session){return modelOptions(source).gamma}
+function modelModeName(mode){return({alpha:"α",beta:"β",gamma:"γ",betaGamma:"β＋γ"})[mode]||"α"}
+function modelOptionsName(source=session){let o=modelOptions(source);return o.beta&&o.gamma?"β＋γ":o.beta?"β":o.gamma?"γ":"αのみ"}
+function modelPosterior(mode,m,g,bb,reg,playedG,c,sessionBB,sessionREG){
+ if(mode==="beta")return betaPosterior(m,g,bb,reg,playedG,c?.grape||0);
+ if(mode==="gamma")return gammaPosterior(m,g,bb,reg,playedG,c,sessionBB,sessionREG);
+ if(mode==="betaGamma")return betaGammaPosterior(m,g,bb,reg,playedG,c,sessionBB,sessionREG);
+ return posterior(m,g,bb,reg)
+}
+function syncModelOptionChecks(){let o=modelOptions(session);$("useBetaModel").checked=o.beta;$("useGammaModel").checked=o.gamma}
+function setModelOption(kind,enabled,notify=true){
+ if(!session||!["beta","gamma"].includes(kind))return;
+ session[kind==="beta"?"useBetaModel":"useGammaModel"]=!!enabled;session.useBeta=modeUsesBeta();syncModelOptionChecks();renderBalance();renderCurrent();renderHistory();updateCurrentGraph();updateLog();saveTemp();if(notify)toast(`${kind==="beta"?"β":"γ"}モデルを${enabled?"使用します":"外しました"}`)
+}
 // 720万実戦シミュレーションを基準にしたβ信頼度。G数は「ぶどうを数えた実戦G数」。
 // 高：P4+精度の改善が明確になった領域。アイム/ガールズは3000Gまでの検証では高に未到達。
 const BETA_CONFIDENCE={
@@ -278,14 +336,47 @@ const BETA_CONFIDENCE={
 };
 function betaConfidence(machine,playedG){
  let x=BETA_CONFIDENCE[machine]||{medium:Infinity,high:null},g=Math.max(0,playedG||0);
- if(x.high!=null&&g>=x.high)return{level:"高",cls:"high",useBeta:true,text:`信頼度 高（${x.high}G〜）`};
- if(g>=x.medium)return{level:"中",cls:"mid",useBeta:false,text:x.high==null?`信頼度 中（3000Gまで高未到達）`:`信頼度 中（高は${x.high}G〜）`};
- return{level:"低",cls:"low",useBeta:false,text:`信頼度 低（中は${x.medium}G〜）`};
+ if(x.high!=null&&g>=x.high)return{level:"高",cls:"high",useBeta:true,text:`β信頼度 高（${x.high}G〜・自動採用）`};
+ if(g>=x.medium)return{level:"中",cls:"mid",useBeta:true,text:x.high==null?`β信頼度 中（自動採用・3000Gまで高未到達）`:`β信頼度 中（自動採用・高は${x.high}G〜）`};
+ return{level:"低",cls:"low",useBeta:false,text:`β信頼度 低（中は${x.medium}G〜）`};
 }
+// γ単独は種別不明10%想定でα対比を検証。マイジャグ以外は6000Gまで1%以上の安定改善に未到達。
+const GAMMA_CONFIDENCE={my5:{medium:600,high:2100},gogo3:{medium:null,high:null},imex:{medium:null,high:null},girls:{medium:null,high:null}};
+function gammaConfidence(machine,playedG){
+ let x=GAMMA_CONFIDENCE[machine]||{medium:null,high:null},g=Math.max(0,playedG||0);
+ if(x.medium==null)return{level:"低",cls:"low",useGamma:false,text:"γ信頼度 低（6000Gまでα超え未確認）"};
+ if(x.high!=null&&g>=x.high)return{level:"高",cls:"high",useGamma:true,text:`γ信頼度 高（${x.high}G〜・自動採用）`};
+ if(g>=x.medium)return{level:"中",cls:"mid",useGamma:true,text:`γ信頼度 中（自動採用・高は${x.high}G〜）`};
+ return{level:"低",cls:"low",useGamma:false,text:`γ信頼度 低（中は${x.medium}G〜）`}
+}
+// α対比Monte Carlo（開始3000/5000/7000G、種別不明20%、100G刻み）を基準にしたβ＋γ信頼度。
+// 中：P4+ Brier誤差を1%以上改善、高：3%以上改善。境界から連続5区間を確認。
+const BETA_GAMMA_CONFIDENCE={
+ my5:{medium:300,high:1200},
+ gogo3:{medium:300,high:800},
+ imex:{medium:2200,high:null},
+ girls:{medium:1900,high:null}
+};
+function betaGammaConfidence(machine,playedG){
+ let x=BETA_GAMMA_CONFIDENCE[machine]||{medium:Infinity,high:null},g=Math.max(0,playedG||0);
+ if(x.high!=null&&g>=x.high)return{level:"高",cls:"high",useBetaGamma:true,text:`β＋γ信頼度 高（${x.high}G〜・自動採用）`};
+ if(g>=x.medium)return{level:"中",cls:"mid",useBetaGamma:true,text:x.high==null?`β＋γ信頼度 中（自動採用・6000Gまで高未到達）`:`β＋γ信頼度 中（自動採用・高は${x.high}G〜）`};
+ return{level:"低",cls:"low",useBetaGamma:false,text:`β＋γ信頼度 低（中は${x.medium}G〜）`};
+}
+function automaticModelDecision(machine,playedG,source=session){
+ let o=modelOptions(source),g=Math.max(0,playedG||0);
+ if(o.beta&&o.gamma){let c=betaGammaConfidence(machine,g);if(c.useBetaGamma)return{mode:"betaGamma",confidence:c}}
+ let candidates=[];
+ if(o.beta){let c=betaConfidence(machine,g);if(c.useBeta)candidates.push({mode:"beta",confidence:c})}
+ if(o.gamma){let c=gammaConfidence(machine,g);if(c.useGamma)candidates.push({mode:"gamma",confidence:c})}
+ if(candidates.length){candidates.sort((a,b)=>(b.confidence.level==="高")-(a.confidence.level==="高")||((a.mode==="beta")?-1:1));return candidates[0]}
+ return{mode:"alpha",confidence:null}
+}
+function pendingModelConfidence(machine,playedG,source=session){let o=modelOptions(source);if(o.beta&&o.gamma)return betaGammaConfidence(machine,playedG);if(o.beta)return betaConfidence(machine,playedG);if(o.gamma)return gammaConfidence(machine,playedG);return null}
+function effectiveModelMode(_legacyMode,m,playedG,source=session){return automaticModelDecision(m,playedG,source).mode}
 function eventDecision(e){
- let pg=Math.max(0,(e?.totalG||0)-(session?.start?.g||0)),conf=betaConfidence(session.machine,pg);
- if(session.useBeta&&conf.useBeta&&e?.betaP4!=null)return{model:"β",p4:e.betaP4,rank:e.betaRank,conf};
- return{model:"α",p4:e.p4,rank:e.rank,conf};
+ let pg=Math.max(0,(e?.totalG||0)-(session?.start?.g||0)),decision=automaticModelDecision(session.machine,pg),mode=decision.mode,sb=Math.max(0,(e?.bb||0)-(session?.start?.bb||0)),sr=Math.max(0,(e?.reg||0)-(session?.start?.reg||0)),p=modelPosterior(mode,session.machine,e.totalG,e.bb,e.reg,pg,e.counters||{},sb,sr),r=rankInfo(p.p4plus);
+ return{model:modelModeName(mode),mode,p4:p.p4plus,rank:r.label,conf:decision.confidence};
 }
 function rankInfo(p){
  if(p>=90)return{label:"S",cls:"S",invest:+$("invA").value};
@@ -324,8 +415,17 @@ function bonusPromotionLimit(g,bb,reg,m,type){
 }
 function rankCard(g,bb,reg,m,cap){
  let p=posterior(m,g,bb,reg),r=rankInfo(p.p4plus),d=nextDown(g,bb,reg,m);
- let pg=session?Math.max(0,g-session.start.g):0, gc=session?.counters?.grape||0, grapeRate=(gc>0&&pg>0)?pg/gc:null;
- let betaHtml="";if(session?.useBeta){let b=betaPosterior(m,g,bb,reg,pg,gc),br=rankInfo(b.p4plus),bc=betaConfidence(m,pg);betaHtml=`<div class="betaBox"><div class="betaTitle">β P4+（α＋ぶどう）</div><div class="betaP4">${pct(b.p4plus)}　${br.label}</div><div class="betaHint">実戦 ${pg}G / ぶどう ${gc}回${grapeRate?` / 1/${grapeRate.toFixed(2)}`:""}</div><div class="betaConfidence ${bc.cls}">${bc.text}</div></div>`}
+ let pg=session?Math.max(0,g-session.start.g):0,c=session?.counters||{},gc=c.grape||0,grapeRate=(gc>0&&pg>0)?pg/gc:null,decision=automaticModelDecision(m,pg),effective=decision.mode,sb=session?Math.max(0,bb-session.start.bb):0,sr=session?Math.max(0,reg-session.start.reg):0;
+ let modelHtml="";
+ if(effective==="alpha"){
+  let pc=pendingModelConfidence(m,pg);if(pc)modelHtml=`<div class="autoModelStatus"><b>現在はαを採用</b><br><span class="betaConfidence ${pc.cls}">${pc.text}</span></div>`
+ }else if(effective!=="alpha"){
+  let includesGamma=effective==="gamma"||effective==="betaGamma",q=modelPosterior(effective,m,g,bb,reg,pg,c,sb,sr),qr=rankInfo(q.p4plus),nonBonus=Math.max(0,(c.cherry||0)-(c.cherryBB||0)-(c.cherryREG||0)),cherryRate=nonBonus>0&&pg>0?pg/nonBonus:null,unknown=(c.unknownBB||0)+(c.unknownREG||0),detail=includesGamma?`🍒${c.cherry||0}（重複BB ${c.cherryBB||0} / REG ${c.cherryREG||0} / 不明 ${unknown}）${cherryRate?`・非重複1/${cherryRate.toFixed(2)}`:""}`:`🍇${gc}${grapeRate?`・1/${grapeRate.toFixed(2)}`:""}`;
+  if(effective==="betaGamma")detail=`🍇${gc}${grapeRate?`・1/${grapeRate.toFixed(2)}`:""} / ${detail}`;
+  let bc=decision.confidence,extra=bc?`<div class="betaConfidence ${bc.cls}">${bc.text}</div>`:"";
+  if(includesGamma)extra+=`<div class="gammaCaution">γ確率：${SPECS[m].gamma.status}・？は重複側で計算</div>`;
+  modelHtml=`<div class="modelResultBox ${effective}"><div class="modelResultTitle">${modelModeName(effective)} P4+（自動採用）</div><div class="modelResultP4">${pct(q.p4plus)}　${qr.label}</div><div class="modelResultHint">実戦 ${pg}G / ${detail}</div>${extra}</div>`
+ }
  let lower=lowerRankLabel(r.label), bbUp=bonusPromotionLimit(g,bb,reg,m,"BB"), regUp=bonusPromotionLimit(g,bb,reg,m,"REG");
  let battle=d===null?"降格ラインなし":`<b>${d}G</b>ノーボーナスで <b>${r.label} → ${lower||"D"}</b>`;
  let promo;
@@ -341,26 +441,26 @@ function rankCard(g,bb,reg,m,cap){
   <div class="stat"><div class="k">降格まで</div><div class="v">${d===null?"—":d+"G"}</div></div>
  </div>
  <div class="decisionSummary">${battle}</div>
- <div class="promotionBox"><div class="promotionTitle">ランク昇格</div>${promo}</div>${betaHtml}`
+ <div class="promotionBox"><div class="promotionTitle">ランク昇格</div>${promo}</div>${modelHtml}`
 }
 function finance(){if(!session.finance)session.finance={cashInvest:0,carryIn:0,adjust:0,carryMode:null,priorProfit:0,priorCashInvest:0};if(session.finance.priorProfit==null)session.finance.priorProfit=0;if(session.finance.priorCashInvest==null)session.finance.priorCashInvest=0;return session.finance}
-function counters(){if(!session.counters)session.counters={grape:0,replay:0,cherry:0};return session.counters}
+function counters(){if(!session.counters)session.counters={};for(const k of ["grape","replay","cherry","cherryBB","cherryREG","unknownBB","unknownREG"])if(!Number.isFinite(+session.counters[k]))session.counters[k]=0;return session.counters}
 function playedGames(){return session?Math.max(0,session.current.g-session.start.g):0}
 function displayedPlayedGames(includeLiveCheck=true){return playedGames()+(includeLiveCheck?Math.max(0,liveCheckG||0):0)}
 function bonusMedalsForEvents(events){let m=0;for(const e of events||[]){if(e.type==="BB")m+=SPECS[session.machine].bbPay;if(e.type==="REG")m+=SPECS[session.machine].regPay}return m}
 function estimatedRawMedalsUnclamped(includeLiveCheck=true){if(!session)return 0;let f=finance();return f.carryIn+f.cashInvest/COIN_YEN-displayedPlayedGames(includeLiveCheck)*GAME_COIN_RATE+f.adjust+bonusMedalsForEvents(session.events)}
 function actualRawMedalsUnclamped(includeLiveCheck=true){if(!session)return 0;let f=finance(),c=counters(),sp=SPECS[session.machine];return f.carryIn+f.cashInvest/COIN_YEN-displayedPlayedGames(includeLiveCheck)*3+c.replay*3+c.grape*sp.grapePay+c.cherry*sp.cherryPay+f.adjust+bonusMedalsForEvents(session.events)}
-function rawMedalsUnclamped(includeLiveCheck=true){return session?.useBeta?actualRawMedalsUnclamped(includeLiveCheck):estimatedRawMedalsUnclamped(includeLiveCheck)}
+function rawMedalsUnclamped(includeLiveCheck=true){return modeUsesBeta()?actualRawMedalsUnclamped(includeLiveCheck):estimatedRawMedalsUnclamped(includeLiveCheck)}
 function estimatedRawMedals(includeLiveCheck=true){return Math.max(0,estimatedRawMedalsUnclamped(includeLiveCheck))}
 function actualRawMedals(includeLiveCheck=true){return Math.max(0,actualRawMedalsUnclamped(includeLiveCheck))}
 function rawMedals(includeLiveCheck=true){return Math.max(0,rawMedalsUnclamped(includeLiveCheck))}
 function moneyState(includeLiveCheck=true){let f=finance(),med=rawMedals(includeLiveCheck),ret=med*EXCHANGE_YEN,profit=ret-f.cashInvest-f.carryIn*EXCHANGE_YEN,totalCashInvest=(f.priorCashInvest||0)+f.cashInvest,overallProfit=ret-totalCashInvest;return{...f,med,ret,profit,totalCashInvest,overallProfit}}
 function renderBalance(){
  if(!session)return;
- let s=moneyState(),actual=!!session.useBeta,preview=liveCheckG>0?`<span class="previewBadge">現状確認 +${liveCheckG}G</span>`:"";
+ let s=moneyState(),actual=modeUsesBeta(),preview=liveCheckG>0?`<span class="previewBadge">現状確認 +${liveCheckG}G</span>`:"";
  $("balanceTitle").innerHTML=`持ちメダル・${actual?"実数":"推定"}収支 <span class="modeBadge ${actual?"actual":"estimate"}">${actual?"小役実数":"推定"}</span>${preview}`;
  $("medalLabel").textContent=actual?"持ちメダル":"推定持ちメダル";$("returnLabel").textContent=actual?"回収額":"推定回収額";$("profitLabel").textContent=`台単体 ${actual?"収支":"推定収支"}`;$("overallLabel").textContent=`前台含む ${actual?"収支":"推定収支"}`;
- $("balanceNote").textContent=(liveCheckG>0?`現状確認中：確定後${liveCheckG}G分を一時反映しています。 `:"")+(actual?"β併用中：3枚投入、リプレイ+3枚、ぶどう+8枚、チェリー+2枚で実数追跡。数え漏れや稀役は「実際の持ちメダル枚数で修正」で補正できます。":"αのみ：通常時は40Gで50枚消費として推定します。βをONにすると小役カウントによる実数追跡へ切り替わります。");
+ $("balanceNote").textContent=(liveCheckG>0?`現状確認中：確定後${liveCheckG}G分を一時反映しています。 `:"")+(actual?"βを含む判定中：3枚投入、リプレイ+3枚、ぶどう+8枚、チェリー+2枚で実数追跡。数え漏れは持ちメダル修正で補正できます。":"βを含まない判定中：通常時は40Gで50枚消費として推定します。");
  $("cashInvestView").textContent=yen(s.cashInvest);
  $("carryInView").textContent=(s.carryIn?((s.carryMode==="approx"||s.carryMode==="auto")?"約":""):"")+Math.round(s.carryIn)+"枚";
  $("liveMedalsView").textContent=Math.round(s.med)+"枚";
@@ -372,7 +472,7 @@ function renderBalance(){
 
 function estimateProfitAt(s,eventCount){
  let f=s.finance||{cashInvest:0,carryIn:0,adjust:0}, medals=f.carryIn+f.cashInvest/COIN_YEN+(f.adjust||0), events=(s.events||[]).slice(0,eventCount);
- if(s.useBeta&&eventCount>0){let e=events[events.length-1],sp=SPECS[s.machine],pg=Math.max(0,e.totalG-s.start.g),cc=e.counters||{grape:0,replay:0,cherry:0};medals+=-pg*3+(cc.replay||0)*3+(cc.grape||0)*sp.grapePay+(cc.cherry||0)*sp.cherryPay;for(const q of events){if(q.type==="BB")medals+=sp.bbPay;if(q.type==="REG")medals+=sp.regPay}}
+ if(modeUsesBeta(s)&&eventCount>0){let e=events[events.length-1],sp=SPECS[s.machine],pg=Math.max(0,e.totalG-s.start.g),cc=e.counters||{grape:0,replay:0,cherry:0};medals+=-pg*3+(cc.replay||0)*3+(cc.grape||0)*sp.grapePay+(cc.cherry||0)*sp.cherryPay;for(const q of events){if(q.type==="BB")medals+=sp.bbPay;if(q.type==="REG")medals+=sp.regPay}}
  else{for(const e of events){medals-=e.gap*GAME_COIN_RATE;if(e.type==="BB")medals+=SPECS[s.machine].bbPay;if(e.type==="REG")medals+=SPECS[s.machine].regPay}}
  medals=Math.max(0,medals);return medals*EXCHANGE_YEN-f.cashInvest-f.carryIn*EXCHANGE_YEN
 }
@@ -556,9 +656,9 @@ function renderLiveCheck(){
  let active=liveCheckG>0,end=$("liveCheckEndBtn"),steps=$("liveCheckSteps"),status=$("liveCheckStatus"),alpha=$("liveCheckAlpha");
  end.classList.toggle("hidden",!active);steps.classList.toggle("hidden",!active);status.classList.toggle("hidden",!active);alpha.classList.toggle("hidden",!active);
  if(active){
-  let g=session.current.g+liveCheckG,p=posterior(session.machine,g,session.current.bb,session.current.reg),r=rankInfo(p.p4plus);
+  let g=session.current.g+liveCheckG,pg=Math.max(0,g-session.start.g),decision=automaticModelDecision(session.machine,pg),mode=decision.mode,c=counters(),p=modelPosterior(mode,session.machine,g,session.current.bb,session.current.reg,pg,c,session.current.bb-session.start.bb,session.current.reg-session.start.reg),r=rankInfo(p.p4plus);
   $("liveCheckG").value=liveCheckG;status.textContent=`確定 ${session.current.g}G ＋ ハマり ${liveCheckG}G ＝ ${g}G`;
-  alpha.innerHTML=`<div class="liveCheckAlphaRank ${r.cls}">${r.label}</div><div><div class="liveCheckAlphaLabel">一時確認 α P4+</div><div class="liveCheckAlphaValue">${pct(p.p4plus)}</div></div>`
+  alpha.innerHTML=`<div class="liveCheckAlphaRank ${r.cls}">${r.label}</div><div><div class="liveCheckAlphaLabel">一時確認 ${modelModeName(mode)} P4+${mode!=="alpha"?"（信頼度優先）":""}</div><div class="liveCheckAlphaValue">${pct(p.p4plus)}</div></div>`
  }
 }
 function refreshLiveCheck(){renderCounters();renderCurrent();renderBalance()}
@@ -577,6 +677,31 @@ function scrollToStartJudgment(){
   target.scrollIntoView({behavior:"smooth",block:"start"})
  }))
 }
+function syncBonusFlagButtons(){
+ let isBonus=selectedEvent==="BB"||selectedEvent==="REG";
+ document.querySelectorAll("[data-bonus-flag]").forEach(btn=>{let on=isBonus&&selectedBonusFlag===btn.dataset.bonusFlag;btn.disabled=!isBonus;btn.classList.toggle("active",on);btn.setAttribute("aria-pressed",on?"true":"false")});
+ $("bonusFlagHint").innerHTML=isBonus?(selectedBonusFlag==="cherry"?"<strong>チェリー重複として記録</strong>・再タップで解除":selectedBonusFlag==="unknown"?"<strong>不明として保存・判定は重複扱い</strong>":"<strong>無点灯＝単独</strong>・再タップで解除"):"ハマり入力ではボーナス種別を使用しません"
+}
+function setBonusFlag(flag){
+ if(!(selectedEvent==="BB"||selectedEvent==="REG"))return;
+ selectedBonusFlag=selectedBonusFlag===flag?null:flag;syncBonusFlagButtons()
+}
+function applyBonusFlag(type,flag){
+ let c=counters(),autoCherryAdded=false;
+ if(!(type==="BB"||type==="REG"))return{bonusFlag:null,autoCherryAdded:false};
+ if(flag==="cherry"){
+  c[type==="BB"?"cherryBB":"cherryREG"]++;
+  c.cherry++;autoCherryAdded=true
+ }else if(flag==="unknown")c[type==="BB"?"unknownBB":"unknownREG"]++;
+ return{bonusFlag:flag||"solo",autoCherryAdded}
+}
+function revertBonusFlag(e){
+ if(!e||!(e.type==="BB"||e.type==="REG"))return;
+ let c=counters();
+ if(e.bonusFlag==="cherry")c[e.type==="BB"?"cherryBB":"cherryREG"]=Math.max(0,c[e.type==="BB"?"cherryBB":"cherryREG"]-1);
+ if(e.bonusFlag==="unknown")c[e.type==="BB"?"unknownBB":"unknownREG"]=Math.max(0,c[e.type==="BB"?"unknownBB":"unknownREG"]-1);
+ if(e.autoCherryAdded)c.cherry=Math.max(0,c.cherry-1)
+}
 function begin(){
  let m=$("machine").value,g=+$("startG").value,bb=+$("startBB").value,reg=+$("startREG").value,cap=+$("userCap").value||0;
  if(!g||bb+reg>g)return alert("入力値を確認してください");
@@ -586,11 +711,11 @@ function begin(){
    chainId:carry?.chainId||newChainId(),
    startedAt:Date.now(),
    start:{g,bb,reg,p4:p.p4plus,rank:r.label,recInvest:cap>0?Math.min(cap,r.invest):r.invest,userCap:cap},
-   current:{g,bb,reg},events:[],counters:{grape:0,replay:0,cherry:0},useBeta:false,firstBonusTotalMode:true,
+   current:{g,bb,reg},events:[],counters:{grape:0,replay:0,cherry:0,cherryBB:0,cherryREG:0,unknownBB:0,unknownREG:0},useBetaModel:false,useGammaModel:false,useBeta:false,firstBonusTotalMode:true,
    finance:{cashInvest:0,carryIn:carry?.medals||0,adjust:0,carryMode:carry?.mode||null,priorProfit:carry?.chainProfit||0,priorCashInvest:carry?.totalCashInvest||0},
    moveMedals:null,moveMode:null,actualInvest:null,actualReturn:null,endReason:"任意終了",memo:""
  };
- clearLiveCheckState();pendingCarry=null;localStorage.removeItem("alpha_pending_carry");$("useBeta").checked=false;$("firstBonusTotalMode").checked=true;showSession();saveTemp();scrollToStartJudgment()
+ clearLiveCheckState();selectedBonusFlag=null;pendingCarry=null;localStorage.removeItem("alpha_pending_carry");syncModelOptionChecks();syncBonusFlagButtons();$("firstBonusTotalMode").checked=true;showSession();saveTemp();scrollToStartJudgment()
 }
 function firstBonusPending(){return !!session&&!(session.events||[]).some(e=>e.type==="BB"||e.type==="REG")}
 function syncFirstBonusInputMode(){
@@ -608,7 +733,7 @@ function syncFirstBonusInputMode(){
    $("firstBonusHint").textContent=isBonus?"OFF中：初回も従来どおり当たり間G数で記録します。":"ハマりは従来どおり区間G数で記録します。初回ボーナス時に自動計算します。";
  }
 }
-function showSession(){["initialResult","playCard","balanceCard","historyCard","endCard"].forEach(x=>$(x).classList.remove("hidden"));$("initialResultBody").innerHTML=rankCard(session.start.g,session.start.bb,session.start.reg,session.machine,session.start.userCap);renderCounters();renderCurrent();renderHistory();renderBalance();updateCurrentGraph();updateLog();renderPending();syncFirstBonusInputMode();if((session.events||[]).some(e=>e.type==="BB"||e.type==="REG"))toggleInitial(true)}
+function showSession(){["initialResult","playCard","balanceCard","historyCard","endCard"].forEach(x=>$(x).classList.remove("hidden"));syncModelOptionChecks();syncBonusFlagButtons();$("initialResultBody").innerHTML=rankCard(session.start.g,session.start.bb,session.start.reg,session.machine,session.start.userCap);renderCounters();renderCurrent();renderHistory();renderBalance();updateCurrentGraph();updateLog();renderPending();syncFirstBonusInputMode();if((session.events||[]).some(e=>e.type==="BB"||e.type==="REG"))toggleInitial(true)}
 function addEvent(){
  let raw=Math.floor(Number($("eventG").value)),t=selectedEvent;
  if(!Number.isFinite(raw)||raw<1)return alert("G数を1以上で入力してください");
@@ -618,16 +743,16 @@ function addEvent(){
    if(raw<=baseline)return alert(`台の総G数は現在の${baseline}Gより大きい値を入力してください。\n当たり間G数を直接入力する場合は「初回ボーナスだけ台の総G数で入力する」をOFFにしてください。`);
    g=raw-baseline;converted=true;
  }
- clearLiveCheckState();session.current.g+=g;if(t==="BB")session.current.bb++;if(t==="REG")session.current.reg++;let p=posterior(session.machine,session.current.g,session.current.bb,session.current.reg),r=rankInfo(p.p4plus),cc={...counters()},pg=playedGames(),b=session.useBeta?betaPosterior(session.machine,session.current.g,session.current.bb,session.current.reg,pg,cc.grape):null,br=b?rankInfo(b.p4plus):null;session.events.push({gap:g,type:t,p4:p.p4plus,rank:r.label,betaP4:b?.p4plus??null,betaRank:br?.label??null,totalG:session.current.g,bb:session.current.bb,reg:session.current.reg,counters:cc,grapeRate:(cc.grape>0&&pg>0)?pg/cc.grape:null});$("eventG").value="";renderCounters();renderCurrent();renderHistory();renderBalance();updateCurrentGraph();syncFirstBonusInputMode();if(t==="BB"||t==="REG")toggleInitial(true);updateLog();saveTemp();if(converted)toast(`${raw}G − ${baseline}G ＝ ${g}Gで記録しました`)
+ clearLiveCheckState();let flagState=applyBonusFlag(t,selectedBonusFlag);session.current.g+=g;if(t==="BB")session.current.bb++;if(t==="REG")session.current.reg++;let p=posterior(session.machine,session.current.g,session.current.bb,session.current.reg),r=rankInfo(p.p4plus),cc={...counters()},pg=playedGames();session.events.push({gap:g,type:t,bonusFlag:flagState.bonusFlag,autoCherryAdded:flagState.autoCherryAdded,p4:p.p4plus,rank:r.label,totalG:session.current.g,bb:session.current.bb,reg:session.current.reg,counters:cc,grapeRate:(cc.grape>0&&pg>0)?pg/cc.grape:null});selectedBonusFlag=null;syncBonusFlagButtons();$("eventG").value="";renderCounters();renderCurrent();renderHistory();renderBalance();updateCurrentGraph();syncFirstBonusInputMode();if(t==="BB"||t==="REG")toggleInitial(true);updateLog();saveTemp();if(converted)toast(`${raw}G − ${baseline}G ＝ ${g}Gで記録しました`)
 }
-function undo(){if(!session?.events.length)return;clearLiveCheckState();session.events.pop();let s={g:session.start.g,bb:session.start.bb,reg:session.start.reg};for(const e of session.events){s.g+=e.gap;if(e.type==="BB")s.bb++;if(e.type==="REG")s.reg++}session.current=s;renderCounters();renderCurrent();renderHistory();renderBalance();updateCurrentGraph();syncFirstBonusInputMode();if(!(session.events||[]).some(e=>e.type==="BB"||e.type==="REG"))toggleInitial(false);updateLog();saveTemp()}
-function renderCounters(){if(!session)return;let c=counters(),confirmedG=playedGames(),displayG=displayedPlayedGames();$("grapeCount").value=c.grape;$("replayCount").value=c.replay;$("cherryCount").value=c.cherry;$("counterGames").textContent=confirmedG+"G";$("grapeRate").textContent=(c.grape>0&&displayG>0)?"1/"+(displayG/c.grape).toFixed(2):"—";renderLiveCheck()}
+function undo(){if(!session?.events.length)return;clearLiveCheckState();let removed=session.events.pop();revertBonusFlag(removed);let s={g:session.start.g,bb:session.start.bb,reg:session.start.reg};for(const e of session.events){s.g+=e.gap;if(e.type==="BB")s.bb++;if(e.type==="REG")s.reg++}session.current=s;renderCounters();renderCurrent();renderHistory();renderBalance();updateCurrentGraph();syncFirstBonusInputMode();if(!(session.events||[]).some(e=>e.type==="BB"||e.type==="REG"))toggleInitial(false);updateLog();saveTemp()}
+function renderCounters(){if(!session)return;let c=counters(),confirmedG=playedGames(),displayG=displayedPlayedGames(),totalBonus=Math.max(0,session.current.bb-session.start.bb)+Math.max(0,session.current.reg-session.start.reg),known=(c.cherryBB||0)+(c.cherryREG||0),unknown=(c.unknownBB||0)+(c.unknownREG||0),solo=Math.max(0,totalBonus-known-unknown);$("grapeCount").value=c.grape;$("replayCount").value=c.replay;$("cherryCount").value=c.cherry;$("counterGames").textContent=confirmedG+"G";$("grapeRate").textContent=(c.grape>0&&displayG>0)?"1/"+(displayG/c.grape).toFixed(2):"—";$("bonusFlagSummary").textContent=`単独 ${solo} / 🍒 ${known} / ？ ${unknown}`;renderLiveCheck()}
 function changeCounter(name,delta){if(!session)return;let c=counters();c[name]=Math.max(0,Math.round((c[name]||0)+delta));renderCounters();renderCurrent();renderBalance();updateLog();saveTemp()}
 function setCounter(name,value){if(!session)return;let n=Math.floor(Number(value));if(!Number.isFinite(n)||n<0){renderCounters();return}counters()[name]=n;renderCounters();renderCurrent();renderBalance();updateLog();saveTemp()}
 function renderCurrent(){let g=session.current.g+Math.max(0,liveCheckG||0),preview=liveCheckG>0?`<div class="liveCheckStatus" style="margin:0 0 9px">現状確認：確定後 ${liveCheckG}Gハマりを一時反映中（総 ${g}G）</div>`:"";$("currentResult").innerHTML=preview+rankCard(g,session.current.bb,session.current.reg,session.machine,session.start.userCap)}
 function medalsAtEventCount(count){
  let f=finance(),med=f.carryIn+f.cashInvest/COIN_YEN+(f.adjust||0),events=session.events.slice(0,count),sp=SPECS[session.machine];
- if(session.useBeta&&count>0){let e=events[events.length-1],pg=Math.max(0,e.totalG-session.start.g),cc=e.counters||{grape:0,replay:0,cherry:0};med+=-pg*3+(cc.replay||0)*3+(cc.grape||0)*sp.grapePay+(cc.cherry||0)*sp.cherryPay;for(const q of events){if(q.type==="BB")med+=sp.bbPay;if(q.type==="REG")med+=sp.regPay}}
+ if(modeUsesBeta()&&count>0){let e=events[events.length-1],pg=Math.max(0,e.totalG-session.start.g),cc=e.counters||{grape:0,replay:0,cherry:0};med+=-pg*3+(cc.replay||0)*3+(cc.grape||0)*sp.grapePay+(cc.cherry||0)*sp.cherryPay;for(const q of events){if(q.type==="BB")med+=sp.bbPay;if(q.type==="REG")med+=sp.regPay}}
  else{for(const e of events){med-=e.gap*GAME_COIN_RATE;if(e.type==="BB")med+=sp.bbPay;if(e.type==="REG")med+=sp.regPay}}
  return Math.max(0,med)
 }
@@ -637,8 +762,8 @@ function renderHistory(){
  let f=finance();
  el.innerHTML=session.events.map((e,i)=>{
    let med=medalsAtEventCount(i+1), profit=med*EXCHANGE_YEN-f.cashInvest-f.carryIn*EXCHANGE_YEN, overall=med*EXCHANGE_YEN-((f.priorCashInvest||0)+f.cashInvest);
-   let cls=e.type==="BB"?"bb":e.type==="REG"?"reg":"hama",name=e.type==="HAMA"?"ハマり":e.type,d=eventDecision(e),gc=e.counters?.grape??0,gr=e.grapeRate?` / 1/${e.grapeRate.toFixed(2)}`:"";
-   return `<div class="hrow"><div>#${i+1}</div><div><span class="eventBadge ${cls}">${e.gap}G ${name}</span></div><div class="metrics"><b>${d.model}</b> ${pct(d.p4)}　<b>${d.rank}</b><br><span class="muted">${e.totalG}G / BB${e.bb} / REG${e.reg} / 🍇${gc}${gr}</span><div class="hProfit">${session.useBeta?"実数":"推定"} ${Math.round(med)}枚 / 収支 ${profit>=0?"+":""}${yen(profit)}${f.priorProfit?`<br><span class="muted">前台込 ${overall>=0?"+":""}${yen(overall)}</span>`:""}</div></div></div>`
+   let cls=e.type==="BB"?"bb":e.type==="REG"?"reg":"hama",flag=e.bonusFlag==="cherry"?" 🍒":"",name=(e.type==="HAMA"?"ハマり":e.type)+flag,d=eventDecision(e),gc=e.counters?.grape??0,gr=e.grapeRate?` / 1/${e.grapeRate.toFixed(2)}`:"";
+   return `<div class="hrow"><div>#${i+1}</div><div><span class="eventBadge ${cls}">${e.gap}G ${name}</span></div><div class="metrics"><b>${d.model}</b> ${pct(d.p4)}　<b>${d.rank}</b><br><span class="muted">${e.totalG}G / BB${e.bb} / REG${e.reg} / 🍇${gc}${gr} / 🍒${e.counters?.cherry||0}</span><div class="hProfit">${modeUsesBeta()?"実数":"推定"} ${Math.round(med)}枚 / 収支 ${profit>=0?"+":""}${yen(profit)}${f.priorProfit?`<br><span class="muted">前台込 ${overall>=0?"+":""}${yen(overall)}</span>`:""}</div></div></div>`
  }).join("")
 }
 function changeInvest(v){let f=finance();f.cashInvest=Math.max(0,f.cashInvest+v);$("actualInvest").dataset.manual="0";renderBalance();updateCurrentGraph();updateLog();saveTemp()}
@@ -662,16 +787,18 @@ function makeLog(){
  let s=session.start,c=session.current,p=posterior(session.machine,c.g,c.bb,c.reg).p4plus,r=rankInfo(p),m=moneyState(false);
  let startTs=sessionTimestamp("start"),endTs=sessionTimestamp("end"),startLabel=formatDateTimeNoSec(startTs),endLabel=formatDateTimeNoSec(endTs);
  let cc=counters(),pg=playedGames(),gr=(cc.grape>0&&pg>0)?pg/cc.grape:null;
- let lines=["【α実戦記録】","",`機種：${SPECS[session.machine].name}`,`実戦開始：${startLabel}`,`実戦終了：${endLabel}`,`開始データ：${s.g}G BB${s.bb} REG${s.reg}`,`開始P4+：${pct(s.p4)}`,`開始ランク：${s.rank}`,`β併用：${session.useBeta?"ON":"OFF"}`,`推奨投資額：${yen(s.recInvest)}`];
+ let decision=automaticModelDecision(session.machine,pg),effective=decision.mode,selected=modelPosterior(effective,session.machine,c.g,c.bb,c.reg,pg,cc,c.bb-s.bb,c.reg-s.reg),selectedRank=rankInfo(selected.p4plus),actual=modeUsesBeta();
+ let options=modelOptions(),optionText=options.beta||options.gamma?`α＋${modelOptionsName()}（現在${modelModeName(effective)}）`:"αのみ";
+ let lines=["【α・β・γ 実戦記録】","",`機種：${SPECS[session.machine].name}`,`実戦開始：${startLabel}`,`実戦終了：${endLabel}`,`開始データ：${s.g}G BB${s.bb} REG${s.reg}`,`開始P4+：${pct(s.p4)}`,`開始ランク：${s.rank}`,`判定モデル：${optionText}`,`推奨投資額：${yen(s.recInvest)}`];
  if(m.carryIn>0)lines.push(`持込メダル：${m.carryMode==="exact"?"":"約"}${Math.round(m.carryIn)}枚`,`前台までの現金投資：${yen(m.priorCashInvest||0)}`);
  lines.push("","【実戦】");
- if(!session.events.length)lines.push("記録なし");else session.events.forEach(e=>{let d=eventDecision(e),gc=e.counters?.grape??0;lines.push(`${String(e.gap).padStart(3," ")}G ${(e.type==="HAMA"?"ハマり":e.type).padEnd(4," ")}  ${d.model}P4+ ${pct(d.p4).padStart(5," ")}  ${d.rank}  🍇${gc}${e.grapeRate?` 1/${e.grapeRate.toFixed(2)}`:""}`)});
- lines.push("",session.useBeta?"【実数収支】":"【推定収支】",`換金換算：1枚18.3円`,`現金投資：${yen(m.cashInvest)}`,`${session.useBeta?"持ちメダル":"推定持ちメダル"}：${Math.round(m.med)}枚`,`${session.useBeta?"回収額":"推定回収額"}：${yen(m.ret)}`,`${session.useBeta?"台単体収支":"台単体推定収支"}：${m.profit>=0?"+":""}${yen(m.profit)}`,`累計現金投資：${yen(m.totalCashInvest)}`,`${session.useBeta?"前台含む収支":"前台含む推定収支"}：${m.overallProfit>=0?"+":""}${yen(m.overallProfit)}`);
+ if(!session.events.length)lines.push("記録なし");else session.events.forEach(e=>{let d=eventDecision(e),gc=e.counters?.grape??0,flag=e.bonusFlag==="cherry"?"🍒":"";lines.push(`${String(e.gap).padStart(3," ")}G ${((e.type==="HAMA"?"ハマり":e.type)+flag).padEnd(6," ")}  ${d.model}P4+ ${pct(d.p4).padStart(5," ")}  ${d.rank}  🍇${gc}${e.grapeRate?` 1/${e.grapeRate.toFixed(2)}`:""}`)});
+ lines.push("",actual?"【実数収支】":"【推定収支】",`換金換算：1枚18.3円`,`現金投資：${yen(m.cashInvest)}`,`${actual?"持ちメダル":"推定持ちメダル"}：${Math.round(m.med)}枚`,`${actual?"回収額":"推定回収額"}：${yen(m.ret)}`,`${actual?"台単体収支":"台単体推定収支"}：${m.profit>=0?"+":""}${yen(m.profit)}`,`累計現金投資：${yen(m.totalCashInvest)}`,`${actual?"前台含む収支":"前台含む推定収支"}：${m.overallProfit>=0?"+":""}${yen(m.overallProfit)}`);
  if(session.moveMedals!=null){
    let mv=session.moveMedals,mvRet=mv*EXCHANGE_YEN,tableMoveProfit=mvRet-m.cashInvest-m.carryIn*EXCHANGE_YEN,chainMoveProfit=mvRet-m.totalCashInvest;
    lines.push(`移動メダル：${session.moveMode==="exact"?"推定":"約"}${Math.round(mv)}枚`,`移動時推定回収額：${yen(mvRet)}`,`移動時台単体推定収支：${tableMoveProfit>=0?"+":""}${yen(tableMoveProfit)}`,`移動時累計推定収支：${chainMoveProfit>=0?"+":""}${yen(chainMoveProfit)}`)
  }
- lines.push("","【終了】",`終了データ：${c.g}G BB${c.bb} REG${c.reg}`,`最終P4+：${pct(p)}`,`最終ランク：${r.label}`,`小役：🍇${cc.grape} / 🔁${cc.replay} / 🍒${cc.cherry}`,`ぶどう確率：${gr?`1/${gr.toFixed(2)}`:"—"}`);if(session.useBeta){let b=betaPosterior(session.machine,c.g,c.bb,c.reg,pg,cc.grape),br=rankInfo(b.p4plus);lines.push(`最終βP4+：${pct(b.p4plus)}`,`最終βランク：${br.label}`)}
+ lines.push("","【終了】",`終了データ：${c.g}G BB${c.bb} REG${c.reg}`,`最終αP4+：${pct(p)}`,`最終αランク：${r.label}`);if(effective!=="alpha")lines.push(`最終${modelModeName(effective)}P4+：${pct(selected.p4plus)}`,`最終${modelModeName(effective)}ランク：${selectedRank.label}`);lines.push(`小役：🍇${cc.grape} / 🔁${cc.replay} / 🍒${cc.cherry}`,`チェリー内訳：重複BB ${cc.cherryBB||0} / 重複REG ${cc.cherryREG||0} / 不明BB ${cc.unknownBB||0} / 不明REG ${cc.unknownREG||0}`,`ぶどう確率：${gr?`1/${gr.toFixed(2)}`:"—"}`);
  let ai=$("actualInvest").value.trim(),ar=$("actualReturn").value.trim(),currentActualInvest=ai?+ai:m.cashInvest;
  if(ai)lines.push(`実投資：${yen(+ai)}`);
  if(ar){
@@ -694,7 +821,7 @@ function saveTemp(){
  session.endTime4=$("endTime4")?.value||null;
  session.actualInvest=$("actualInvest")?.value?+$("actualInvest").value:null;
  session.actualReturn=$("actualReturn")?.value?+$("actualReturn").value:null;
- session.useBeta=!!$("useBeta")?.checked;session.counters=session.counters||{grape:0,replay:0,cherry:0};
+ session.useBetaModel=session.useBetaModel===true;session.useGammaModel=session.useGammaModel===true;session.useBeta=modeUsesBeta();delete session.modelMode;counters();
  try{localStorage.setItem("alpha_current_session",JSON.stringify(session));localStorage.setItem("alpha_selected_event",selectedEvent)}catch(e){console.warn("一時保存に失敗",e)}
 }
 function restoreTemp(){
@@ -702,11 +829,15 @@ function restoreTemp(){
  if(!x)return;
  try{
    session=x;
-   session.events=Array.isArray(session.events)?session.events:[];session.counters=session.counters||{grape:0,replay:0,cherry:0};session.useBeta=!!session.useBeta;session.firstBonusTotalMode=session.firstBonusTotalMode!==false;
+   session.events=Array.isArray(session.events)?session.events:[];session.counters=session.counters||{};
+   if(typeof session.useBetaModel!=="boolean"||typeof session.useGammaModel!=="boolean"){
+    let old=session.modelMode||"";session.useBetaModel=old==="auto"||old==="beta"||old==="betaGamma"||(!old&&session.useBeta===true);session.useGammaModel=old==="auto"||old==="gamma"||old==="betaGamma"
+   }
+   session.useBeta=modeUsesBeta();delete session.modelMode;counters();session.firstBonusTotalMode=session.firstBonusTotalMode!==false;selectedBonusFlag=null;
    session.finance=session.finance||{cashInvest:0,carryIn:0,adjust:0,carryMode:null,priorProfit:0,priorCashInvest:0};
    if(session.finance.priorProfit==null)session.finance.priorProfit=0;
    if(session.finance.priorCashInvest==null)session.finance.priorCashInvest=0;
-   $("machine").value=session.machine||"my5";
+   $("machine").value=session.machine||"my5";syncMachineQuickButtons();
    $("startG").value=session.start?.g||"";
    $("startBB").value=session.start?.bb??"";
    $("startREG").value=session.start?.reg??"";
@@ -717,7 +848,7 @@ function restoreTemp(){
    $("startTime4").value=session.startTime4||"";
    $("endTime4").value=session.endTime4||"";
    $("actualInvest").value=session.actualInvest??session.finance.cashInvest??"";
-   $("actualReturn").value=session.actualReturn??"";$("useBeta").checked=!!session.useBeta;$("firstBonusTotalMode").checked=session.firstBonusTotalMode;
+   $("actualReturn").value=session.actualReturn??"";syncModelOptionChecks();$("firstBonusTotalMode").checked=session.firstBonusTotalMode;
    document.querySelectorAll(".eventBtn").forEach(b=>b.classList.toggle("active",b.dataset.event===selectedEvent));
    showSession();
  }catch(e){
@@ -727,7 +858,7 @@ function restoreTemp(){
    toast("一時データの復元に失敗したため初期化しました")
  }
 }
-function resetSession(){clearLiveCheckState();session=null;localStorage.removeItem("alpha_current_session");$("useBeta").checked=false;$("firstBonusTotalMode").checked=true;selectedEvent="BB";localStorage.setItem("alpha_selected_event","BB");document.querySelectorAll(".eventBtn").forEach(b=>b.classList.toggle("active",b.dataset.event==="BB"));$("initialResultBody").classList.remove("collapsedBody");$("toggleInitialBtn").textContent="折りたたむ";$("endCardBody").classList.add("collapsedBody");$("toggleEndBtn").textContent="開く";["initialResult","playCard","balanceCard","historyCard","endCard"].forEach(x=>$(x).classList.add("hidden"));["compact","startG","startBB","startREG","userCap","eventG","actualInvest","actualReturn","playDate","startTime4","endTime4","memo"].forEach(x=>$(x).value="");window.scrollTo({top:0,behavior:"smooth"})}
+function resetSession(){clearLiveCheckState();session=null;localStorage.removeItem("alpha_current_session");syncModelOptionChecks();$("firstBonusTotalMode").checked=true;selectedEvent="BB";selectedBonusFlag=null;localStorage.setItem("alpha_selected_event","BB");document.querySelectorAll(".eventBtn").forEach(b=>b.classList.toggle("active",b.dataset.event==="BB"));syncBonusFlagButtons();$("initialResultBody").classList.remove("collapsedBody");$("toggleInitialBtn").textContent="折りたたむ";$("endCardBody").classList.add("collapsedBody");$("toggleEndBtn").textContent="開く";["initialResult","playCard","balanceCard","historyCard","endCard"].forEach(x=>$(x).classList.add("hidden"));["compact","startG","startBB","startREG","userCap","eventG","actualInvest","actualReturn","playDate","startTime4","endTime4","memo"].forEach(x=>$(x).value="");window.scrollTo({top:0,behavior:"smooth"})}
 function saveHistory(){
  if(!session)return;
  let h=JSON.parse(localStorage.getItem("alpha_history")||"[]"),log=makeLog(),m=moneyState(false),actualReturn=$("actualReturn").value.trim();
@@ -819,6 +950,9 @@ function saveEditedHistory(){
 ["startTime4","endTime4"].forEach(id=>$(id).addEventListener("input",()=>{$(id).value=$(id).value.replace(/\D/g,"").slice(0,4);updateLog();saveTemp()}));
 $("playDate").addEventListener("input",()=>{updateLog();saveTemp()});
 $("compact").addEventListener("input",()=>{let v=$("compact").value.replace(/\D/g,"").slice(0,8);$("compact").value=v;if(v.length===8){$("startG").value=+v.slice(0,4);$("startBB").value=+v.slice(4,6);$("startREG").value=+v.slice(6)}})
+$("machineQuickMode").addEventListener("change",()=>setMachineQuickMode($("machineQuickMode").checked));
+$("machine").addEventListener("change",syncMachineQuickButtons);
+document.querySelectorAll(".machineQuickBtn").forEach(btn=>btn.onclick=()=>{$("machine").value=btn.dataset.machine;syncMachineQuickButtons()});
 $("judgeBtn").onclick=begin;$("recordBtn").onclick=addEvent;$("undoBtn").onclick=undo;$("invest1000Btn").onclick=()=>changeInvest(1000);$("investMinus1000Btn").onclick=()=>changeInvest(-1000);$("setMedalsBtn").onclick=()=>correctMedals($("actualMedals").value);$("zeroMedalsBtn").onclick=()=>correctMedals(0);
 $("carryExactBtn").onclick=()=>carry("exact");$("carryApproxBtn").onclick=()=>carry("approx");$("carryAutoBtn").onclick=()=>carry("auto");$("cancelCarryBtn").onclick=()=>{pendingCarry=null;localStorage.removeItem("alpha_pending_carry");renderPending()};
 $("finishBtn").onclick=finish;$("copyBtn").onclick=copyLog;$("saveHistoryBtn").onclick=saveHistory;$("newBtn").onclick=resetSession;$("clearHistoryBtn").onclick=()=>{if(confirm("保存済み履歴を全削除しますか？")){localStorage.removeItem("alpha_history");renderSaved()}};
@@ -836,12 +970,16 @@ $("liveCheckPlus10Btn").onclick=()=>incrementLiveCheck(10);
 $("liveCheckEndBtn").onclick=endLiveCheck;
 $("liveCheckG").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();applyLiveCheck($("liveCheckG").value);$("liveCheckG").blur()}});
 document.addEventListener("dblclick",e=>{if(e.target.closest("button"))e.preventDefault()},{passive:false});
-$("useBeta").addEventListener("change",()=>{if(!session)return;session.useBeta=$("useBeta").checked;renderBalance();renderCurrent();renderHistory();updateCurrentGraph();updateLog();saveTemp();toast(session.useBeta?"βモデル＋実数追跡をON":"αモデル＋推定追跡に戻しました")});
+$("useBetaModel").addEventListener("change",()=>setModelOption("beta",$("useBetaModel").checked));
+$("useGammaModel").addEventListener("change",()=>setModelOption("gamma",$("useGammaModel").checked));
+document.querySelectorAll("[data-bonus-flag]").forEach(btn=>btn.onclick=()=>setBonusFlag(btn.dataset.bonusFlag));
 $("firstBonusTotalMode").addEventListener("change",()=>{if(!session)return;session.firstBonusTotalMode=$("firstBonusTotalMode").checked;syncFirstBonusInputMode();saveTemp()});
 document.querySelectorAll(".eventBtn").forEach(btn=>btn.onclick=()=>{
  selectedEvent=btn.dataset.event;
+ selectedBonusFlag=null;
  localStorage.setItem("alpha_selected_event",selectedEvent);
  document.querySelectorAll(".eventBtn").forEach(b=>b.classList.toggle("active",b===btn));
+ syncBonusFlagButtons();
  syncFirstBonusInputMode();
  $("eventG").focus();
 });
@@ -864,6 +1002,6 @@ $("rulesModal").onclick=e=>{if(e.target===$("rulesModal"))$("rulesModal").classL
 $("closeEditHistoryBtn").onclick=()=>{$("editHistoryModal").classList.add("hidden");editingHistoryIndex=null};
 $("editHistoryModal").onclick=e=>{if(e.target===$("editHistoryModal")){$("editHistoryModal").classList.add("hidden");editingHistoryIndex=null}};
 $("saveEditedHistoryBtn").onclick=saveEditedHistory;
-renderPending();renderSaved();restoreSavedHistoryCollapse();restoreTemp();
+setMachineQuickMode(localStorage.getItem("alpha_machine_quick_mode")==="1");syncBonusFlagButtons();renderPending();renderSaved();restoreSavedHistoryCollapse();restoreTemp();syncMachineQuickButtons();
 </script>
 </body></html>
